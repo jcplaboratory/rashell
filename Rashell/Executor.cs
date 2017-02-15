@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 
@@ -16,6 +17,7 @@ namespace Rashell
         #region "Executors"
         public void Starter(string stdin)
         {
+  
             string cmd = Break(stdin);
             string cmdLoc = Find(cmd);
 
@@ -76,17 +78,47 @@ namespace Rashell
             process.OutputDataReceived += new DataReceivedEventHandler(
                 (s, e) =>
                 {
-
                     Console.WriteLine(e.Data);
-                    
                 }
             );
-            process.ErrorDataReceived += new DataReceivedEventHandler((s, e) => { Console.WriteLine(e.Data); });
+            process.ErrorDataReceived += new DataReceivedEventHandler(
+                (s, e) =>
+                {
+                    Console.WriteLine(e.Data);
+                }
+            );
 
             process.Start();
             process.BeginOutputReadLine();
+
+            //while (!process.HasExited)
+            //{
+
+            //    string stdin = null;
+            //    stdin = Console.ReadLine();
+            //    if (!string.IsNullOrEmpty(stdin))
+            //    {
+            //        process.StandardInput.WriteLine(stdin);
+            //    }
+            //}
+
+            //foreach (ProcessThread thread in process.Threads)
+            //{
+            //    if (thread.ThreadState == ThreadState.Wait )
+            //    {
+            //        string stdin = null;
+            //        stdin = Console.ReadLine();
+            //        if (!string.IsNullOrEmpty(stdin))
+            //        {
+            //            process.StandardInput.WriteLine(stdin);
+            //        }
+            //    }
+
+            //}
+
+
             process.WaitForExit();
-            
+
             return true;
         }
         #endregion
@@ -111,32 +143,67 @@ namespace Rashell
             //separate cmd and args
             int i = 0;
             bool foundDCom = false; //double inverted commas presence checker
+            bool foundEnvi = false;
+            string enviVar = null;
+
             foreach (char c in stdin)
             {
-                if (c.ToString() == " ")
+                if (c.ToString() == " ") //looks out for space
                 {
-                    if (!foundDCom)
+                    if (!foundDCom) //move to the next in array if double comma wasn't previously found
                     {
-                        i++;
+                        i++; //increment array index
+                    }
+                    else //if comma was previous found continue adding characters to the current index
+                    {
+                        args[i] += " "; 
+                    }
+                } else if (c.ToString() == "%" && foundEnvi == false) //looks for '%'
+                {
+                    int count = 0;
+                    foreach (char ch in stdin) //counts the number of '%' in stdin
+                    {
+                        if (ch.ToString().Equals("%"))
+                        {
+                            count++;
+                        }   
+                    }
+
+                    double rm = count % 2; //number of '%' must be even
+
+                    if (rm.Equals(0)) //if even number of '%' was found add chars to enviVar
+                    {
+                        foundEnvi = true;
+                        enviVar = null;
+                        enviVar += c;
                     }
                     else
                     {
-                        args[i] += " ";
+                        args[i] += c; //if not even, continue adding to current index
                     }
                 }
                 else
                 {
-                    if (c.ToString().Equals("\"") && foundDCom == false)
+                    if (c.ToString().Equals("\"") && foundDCom == false) //if double inverted comma found set foundDcom = true
                     {
                         foundDCom = true;
                     } else if (c.ToString().Equals("\"") && foundDCom)
                     {
-                        foundDCom = false;
+                        foundDCom = false; //if comma was previously found, means closing comma was found. Set foundDcom = false
+                    } else if (!c.ToString().Equals("%") && foundEnvi)
+                    {
+                        enviVar += c; //increment enviVar while closing '%' is not found
+                    } else if (c.ToString().Equals("%") && foundEnvi)
+                    {
+                        foundEnvi = false; //closing '%' found. set foundEnvi = false and expand Variable in enviVar
+                        enviVar += c;
+                        args[i] = Environment.ExpandEnvironmentVariables(enviVar);
                     }
                     else { args[i] += c; }
                     
                 }
             }
+
 
             this.arguments.Clear();
             i = 0;
@@ -221,3 +288,4 @@ namespace Rashell
         
     }
 }
+
