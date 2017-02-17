@@ -91,16 +91,16 @@ namespace Rashell
             process.Start();
             process.BeginOutputReadLine();
 
-            //while (!process.HasExited)
-            //{
+            while (!process.HasExited)
+            {
 
-            //    string stdin = null;
-            //    stdin = Console.ReadLine();
-            //    if (!string.IsNullOrEmpty(stdin))
-            //    {
-            //        process.StandardInput.WriteLine(stdin);
-            //    }
-            //}
+                string stdin = null;
+                stdin = Console.ReadLine();
+                if (!string.IsNullOrEmpty(stdin))
+                {
+                    process.StandardInput.WriteLine(stdin);
+                }
+            }
 
             //foreach (ProcessThread thread in process.Threads)
             //{
