@@ -1,10 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace Rashell
 {
@@ -13,7 +7,7 @@ namespace Rashell
         #region "Initialization"
         private void Init()
         {
-            string version = "1.0a";
+            string version = "0.2a";
             string platform = Environment.OSVersion.ToString();
             string sys_usr = Environment.UserName.ToString().ToLower();
             string user_home = Environment.ExpandEnvironmentVariables("%userprofile%");
@@ -41,15 +35,15 @@ namespace Rashell
             
             Console.BackgroundColor = ConsoleColor.DarkMagenta;
             Console.Clear();
-            setPwd(user_home);
+            WorkingDirectory = user_home;
 
             if (use_short)
             {
                 Console.Write(sys_usr_short + "@" + "rashell:>");
-                setShellpwd(sys_usr_short + "@" + "rashell:>");
+                ShellWorkingDirectory = sys_usr_short + "@" + "rashell:>";
             } else {
                 Console.Write(sys_usr + "@" + "rashell:>");
-                setShellpwd(sys_usr + "@" + "rashell:>");
+                ShellWorkingDirectory = sys_usr + "@" + "rashell:>";
             }
 
         }
@@ -57,79 +51,77 @@ namespace Rashell
         {
             Executor execute = new Executor();
             string stdin = null;
+
         Start:
             stdin = null;
             stdin = Console.ReadLine().ToLower();
 
-            //Count Double Inverted Commas
-            int commaCount = 0;
-            foreach (char c in stdin)
-            {
-                if (c.ToString() == "\"")
-                {
-                    commaCount++;
-                }
-            }
 
-            double rm = 0; //Check if num of d inverted commas is uneven
-            rm = commaCount % 2;
-            string read = null;
-            if (!rm.Equals(0))
+            if (!string.IsNullOrEmpty(stdin) && !string.IsNullOrWhiteSpace(stdin))
             {
-                append: //append stdin until comma is even
-                Console.Write(":>");
-                read = Console.ReadLine();
-                bool found = false;
-                foreach (char c in read)
+                //Count Double Inverted Commas
+                int commaCount = 0;
+                foreach (char c in stdin)
                 {
-                    if (!c.ToString().Equals("\"") && !found)
+                    if (c.ToString() == "\"")
                     {
-                        stdin = stdin + c;
-                    }
-                    else
-                    {
-                        found = true;
+                        commaCount++;
                     }
                 }
-                if (!found)
+
+                double rm = 0; //Check if num of d inverted commas is uneven
+                rm = commaCount % 2;
+                string read = null;
+                if (!rm.Equals(0))
                 {
-                    goto append;
+                    append: //append stdin until comma is even
+                    Console.Write(":>");
+                    read = Console.ReadLine();
+                    bool found = false;
+                    foreach (char c in read)
+                    {
+                        if (!c.ToString().Equals("\"") && !found)
+                        {
+                            stdin = stdin + c;
+                        }
+                        else
+                        {
+                            found = true;
+                        }
+                    }
+                    if (!found)
+                    {
+                        goto append;
+                    }
                 }
-            }
-            //writes console welcome
-            if (!string.IsNullOrEmpty(stdin))
-            {
 
                 execute.Starter(stdin);
-                Console.Write(getShellpwd());
+                Console.Write(ShellWorkingDirectory);
                 goto Start;
             }
-            else {
-                Console.Write(getShellpwd());
+            else
+            {
+                Console.Write(ShellWorkingDirectory);
                 goto Start;
             }
         }
+
         #endregion;
 
         #region "Session Vars"
-        protected string pwd;
-        protected string shellpwd;
-        public void setPwd(string pwd)
+        protected string WorkingDir;
+        protected string ShellWorkingDir;
+
+        public string WorkingDirectory
         {
-            this.pwd = pwd;
-        }
-        public string getPwd()
-        {
-            return this.pwd;
+            get { return WorkingDir; }
+            set { WorkingDir = value; }
         }
 
-        public void setShellpwd(string shellpwd)
+        public string ShellWorkingDirectory
         {
-            this.shellpwd = shellpwd;
-        }
-        public string getShellpwd()
-        {
-            return this.shellpwd;
+            get { return ShellWorkingDir; }
+            set { ShellWorkingDir = value; }
         }
         #endregion
         static void Main(string[] args)
