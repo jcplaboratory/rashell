@@ -1,9 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 
 namespace Rashell
 {
     class Rashell
     {
+        private List<string> EnvironmentPaths = new List<string>();
+        private List<string> KnownExtensions = new List<string>();
+        private string DEF_WORKING_DIR;
+    
         #region "Initialization"
         private void Init()
         {
@@ -14,6 +21,8 @@ namespace Rashell
             string machine = Environment.MachineName.ToString();
             string sys_usr_short = null;
             bool use_short = false;
+
+           
 
             if (sys_usr.IndexOf(" ") > 0)
             {
@@ -30,12 +39,25 @@ namespace Rashell
                 sys_arch = "x86";
             }
 
+            //Load Configuration
+            Configuration config = new Configuration();
+            config.Read();
+            this.EnvironmentPaths = config.GetEnvironmentPaths();
+            this.KnownExtensions = config.GetKnownExtensions();
+            this.DEF_WORKING_DIR = config.GetWorkingDir();
+
             //Console default settings
             Console.Title = "Rashell | ~v " + version + " | " + "~m " + machine + " | "+ platform + " | " + sys_arch;
             
             Console.BackgroundColor = ConsoleColor.DarkMagenta;
             Console.Clear();
-            WorkingDirectory = user_home;
+
+            if (string.IsNullOrEmpty(this.DEF_WORKING_DIR) || string.IsNullOrWhiteSpace(this.DEF_WORKING_DIR))
+            {
+                WorkingDirectory = user_home;
+            }
+            else
+            { WorkingDirectory = this.DEF_WORKING_DIR; }
 
             if (use_short)
             {
@@ -45,17 +67,15 @@ namespace Rashell
                 Console.Write(sys_usr + "@" + "rashell:>");
                 ShellWorkingDirectory = sys_usr + "@" + "rashell:>";
             }
-
+           
         }
         private void Listen()
         {
-            Executor execute = new Executor();
             string stdin = null;
 
         Start:
             stdin = null;
             stdin = Console.ReadLine().ToLower();
-
 
             if (!string.IsNullOrEmpty(stdin) && !string.IsNullOrWhiteSpace(stdin))
             {
@@ -95,7 +115,7 @@ namespace Rashell
                     }
                 }
 
-                execute.Starter(stdin);
+                Starter(stdin);
                 Console.Write(ShellWorkingDirectory);
                 goto Start;
             }
@@ -105,8 +125,7 @@ namespace Rashell
                 goto Start;
             }
         }
-
-        #endregion;
+        #endregion
 
         #region "Session Vars"
         protected string WorkingDir;
@@ -124,6 +143,77 @@ namespace Rashell
             set { ShellWorkingDir = value; }
         }
         #endregion
+
+        #region "Loaders"
+        public void Starter(string stdin)
+        {
+            Formatters format = new Formatters();
+            Executor execute = new Executor();
+            string cmd = format.Break(stdin);
+            string cmdLoc = Find(cmd);
+
+            if (!string.IsNullOrEmpty(cmdLoc))
+            {
+                execute.Execute(cmdLoc, format.getArguments());
+            }
+            else { execute.exec_in(cmd); }
+
+        }
+
+        public string Find(string cmd)
+        {
+            string cmdLoc = null;
+
+            if (!File.Exists(cmd))
+            {
+                foreach (string ex in this.KnownExtensions)
+                {
+                    cmdLoc = cmd + ex;
+                    if (File.Exists(cmdLoc))
+                    {
+                        return cmdLoc;
+                    }
+                    else
+                    {
+                        foreach (string path in this.EnvironmentPaths)
+                        {
+                            if (!Path.HasExtension(cmd)) //Check is extension is already present in path
+                            {
+                                foreach (string x in this.KnownExtensions)
+                                {
+                                    cmdLoc = path + "\\" + cmd + x;
+
+                                    if (File.Exists(cmdLoc))
+                                    {
+                                        return cmdLoc;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                cmdLoc = path + "\\" + cmd;
+                                if (File.Exists(cmdLoc))
+                                {
+                                    return cmdLoc;
+                                }
+                            }
+
+
+                        }
+                    }
+                }
+
+
+
+            }
+            else
+            {
+                return cmd;
+            }
+
+            return null;
+        }
+        #endregion;
         static void Main(string[] args)
         {
             //Call init functions

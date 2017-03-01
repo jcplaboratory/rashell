@@ -10,23 +10,11 @@ namespace Rashell
     {
         protected Commands command = new Commands();
         Formatters format = new Formatters();
-
+        Rashell shell = new Rashell();
         #region "Executors"
-        public void Starter(string stdin)
-        {
-            
-            string cmd = format.Break(stdin);
-            string cmdLoc = format.Find(cmd);
+       
 
-            if (!string.IsNullOrEmpty(cmdLoc))
-            {
-                Execute(cmd);
-            }
-            else { exec_in(cmd); }
-
-        }
-
-        private void exec_in(string command)
+        public void exec_in(string command)
         {
             switch (command)
             {
@@ -49,10 +37,8 @@ namespace Rashell
             }
         }
 
-        private bool Execute(string cmd)
+        public bool Execute(string cmd, List<string>arguments)
         {
-            List<string>arguments = new List<string>();
-            arguments = format.getArguments();
 
             int argsCt = arguments.Count;
             string Arguments = null;
@@ -71,8 +57,6 @@ namespace Rashell
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.FileName = cmd;
             process.StartInfo.Arguments = Arguments;
-
-            
 
             process.OutputDataReceived += new DataReceivedEventHandler(
                 (s, e) =>

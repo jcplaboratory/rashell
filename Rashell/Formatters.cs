@@ -11,34 +11,11 @@ namespace Rashell
         public string Break(string stdin)
         {
 
-            //count and remove redundant spaces.
-            bool foundSpace = false;
-            string newStdin = null;
-            int spaces = 0;
-            foreach (char chr in stdin)
-            {
-                if (!foundSpace && chr.ToString() != " ")
-                {
-                    newStdin += chr;
-                }
-                else if (foundSpace && chr.ToString() != " ")
-                {
-                    newStdin += chr;
-                    foundSpace = false;
-                }
-                else if (!foundSpace && chr.ToString() == " ")
-                {
-                    if (!string.IsNullOrEmpty(newStdin))
-                    {
-                        newStdin += " ";
-                    }
-                    spaces++;
-                    foundSpace = true;
-                }
-            }
-
-            stdin = newStdin; //reload reformatted commands into main stream
-
+         
+            int spaces = CountSpaces(stdin);
+            stdin = RemoveTab(stdin);
+            stdin = RemoveSpace(stdin); //reload reformatted commands into main stream
+            
             //create array to store args
             string[] args = new string[spaces + 1];
             args.Initialize();
@@ -123,79 +100,92 @@ namespace Rashell
                 }
                 i++;
             }
+        
             return args[0];
         }
 
-        public string Find(string cmd)
-        {
-            //**********************************
-            string[] envi_paths = new string[3];
-            string[] known_ex = new string[3];
-            string cmdLoc = null;
-            envi_paths.Initialize();
-            known_ex.Initialize();
-            //**********************************
-
-            envi_paths[0] = Environment.ExpandEnvironmentVariables("%WINDIR%");
-            envi_paths[1] = Environment.ExpandEnvironmentVariables("%WINDIR%\\SYSTEM32");
-
-            known_ex[0] = ".exe";
-            known_ex[1] = ".bat";
-            known_ex[2] = ".cmd";
-
-            if (!File.Exists(cmd))
-            {
-                foreach (string ex in known_ex)
-                {
-                    cmdLoc = cmd + ex;
-                    if (File.Exists(cmdLoc))
-                    {
-                        return cmdLoc;
-                    }
-                    else
-                    {
-                        foreach (string path in envi_paths)
-                        {
-                            if (!Path.HasExtension(cmd)) //Check is extension is already present in path
-                            {
-                                foreach (string x in known_ex)
-                                {
-                                    cmdLoc = path + "\\" + cmd + x;
-
-                                    if (File.Exists(cmdLoc))
-                                    {
-                                        return cmdLoc;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                cmdLoc = path + "\\" + cmd;
-                                if (File.Exists(cmdLoc))
-                                {
-                                    return cmdLoc;
-                                }
-                            }
-
-
-                        }
-                    }
-                }
-
-
-
-            }
-            else
-            {
-                return cmd;
-            }
-
-            return null;
-        }
+        
 
         public List<string> getArguments()
         {
             return this.arguments;
+        }
+
+        public string RemoveSpace(string stdin)
+        {
+            //count and remove redundant spaces.
+            bool foundSpace = false;
+            string newStdin = null;
+      
+            if (!string.IsNullOrEmpty(stdin) && !string.IsNullOrWhiteSpace(stdin))
+            {
+                foreach (char chr in stdin)
+                {
+                    if (!foundSpace && chr.ToString() != " ")
+                    {
+                        newStdin += chr;
+                    }
+                    else if (foundSpace && chr.ToString() != " ")
+                    {
+                        newStdin += chr;
+                        foundSpace = false;
+                    }
+                    else if (!foundSpace && chr.ToString() == " ")
+                    {
+                        if (!string.IsNullOrEmpty(newStdin))
+                        {
+                            newStdin += " ";
+                        }
+                        foundSpace = true;
+                    }
+                }
+            }
+            
+            return newStdin;
+        }
+        public string RemoveTab(string stdin)
+        {
+            //count and remove redundant spaces.
+            bool foundTab = false;
+            string newStdin = null;
+
+            if (!string.IsNullOrEmpty(stdin) && !string.IsNullOrWhiteSpace(stdin))
+            {
+                foreach (char chr in stdin)
+                {
+                    if (!foundTab && chr.ToString() != "\t")
+                    {
+                        newStdin += chr;
+                    }
+                    else if (foundTab && chr.ToString() != "\t")
+                    {
+                        newStdin += chr;
+                        foundTab = false;
+                    }
+                    else if (!foundTab && chr.ToString() == "\t")
+                    {
+                        if (!string.IsNullOrEmpty(newStdin))
+                        {
+                            newStdin += " ";
+                        }
+                        foundTab = true;
+                    }
+                }
+            }
+               
+            return newStdin;
+        }
+        public int CountSpaces(string stdin)
+        {
+            int spaces = 0;
+            foreach (char c in stdin)
+            {
+                if (c.ToString() == " ")
+                {
+                    spaces++;
+                }
+            }
+            return spaces;
         }
         #endregion
     }
