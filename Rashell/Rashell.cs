@@ -52,6 +52,12 @@ namespace Rashell
             Console.BackgroundColor = ConsoleColor.DarkMagenta;
             Console.Clear();
 
+            if (config.DisplayMSG()) //Display Rashell Welcome Message
+            {
+                DisplayWelcome(version);
+            }
+            
+
             if (string.IsNullOrEmpty(this.DEF_WORKING_DIR) || string.IsNullOrWhiteSpace(this.DEF_WORKING_DIR))
             {
                 WorkingDirectory = user_home;
@@ -124,6 +130,14 @@ namespace Rashell
                 Console.Write(ShellWorkingDirectory);
                 goto Start;
             }
+        }
+        private void DisplayWelcome(string version)
+        {
+            string msg = null;
+            msg = "Rashell Dynamic Command Processor\n"
+                  + "Version " + version + "\n"
+                  + "2008-2017 J.C.P Laboratory, Under CPGSL V4.\n";
+            Console.WriteLine(msg);
         }
         #endregion
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Rashell
 {
@@ -119,6 +120,7 @@ namespace Rashell
       
             if (!string.IsNullOrEmpty(stdin) && !string.IsNullOrWhiteSpace(stdin))
             {
+                int i = 1;
                 foreach (char chr in stdin)
                 {
                     if (!foundSpace && chr.ToString() != " ")
@@ -134,13 +136,17 @@ namespace Rashell
                     {
                         if (!string.IsNullOrEmpty(newStdin))
                         {
-                            newStdin += " ";
+                            if (i != stdin.Length) //prevents unneeded space after the line
+                            {
+                                newStdin += " ";
+                            } 
                         }
                         foundSpace = true;
                     }
+                    i++;
                 }
             }
-            
+           
             return newStdin;
         }
         public string RemoveTab(string stdin)

@@ -13,12 +13,18 @@ namespace Rashell
         private string DEF_WORKING_DIR;
         private List<string> EnvironmentPaths = new List<string>();
         private List<string> Known_Extensions = new List<string>();
+        private bool ENABLE_EVT_LOG;
+        private bool ENABLE_ERR_LOG;
+        private bool DISPLAY_WELCOME_MSG;
 
         public Configuration()
         {
             this.config_dir_path = AppDomain.CurrentDomain.BaseDirectory;
             this.config_path = this.config_dir_path + "\\config.conf";
             this.DEF_WORKING_DIR = null;
+            this.ENABLE_ERR_LOG = false;
+            this.ENABLE_EVT_LOG = false;
+            this.DISPLAY_WELCOME_MSG = false;
         }
        
 
@@ -36,7 +42,7 @@ namespace Rashell
                 StreamReader ConfigReader = new StreamReader(this.config_path);
                 while (!ConfigReader.EndOfStream)
                 {
-                    string line = ConfigReader.ReadLine();
+                    string line = ConfigReader.ReadLine().ToUpper();
                     line = format.RemoveTab(line);
                     line = format.RemoveSpace(line);
 
@@ -66,6 +72,52 @@ namespace Rashell
                                 }
                             } 
                            
+                        } else if (line.StartsWith("ENABLE_EVT_LOGGING:"))
+                        {
+                            if (line.EndsWith(";"))
+                            {
+                                string log = null;
+                                log = line.Substring(line.IndexOf(":") + 2, (line.Length - (line.IndexOf(":") + 1)) - 2);
+                                if (log == "ON")
+                                {
+                                    this.ENABLE_EVT_LOG = true;
+                                }
+                                else if (log == "OFF")
+                                {
+                                    this.ENABLE_EVT_LOG = false;
+                                }
+                            }
+                            
+                        } else if (line.StartsWith("ENABLE_ERR_LOGGING:"))
+                        {
+                            if(line.EndsWith(";"))
+                            {
+                                string log = null;
+                                log = line.Substring(line.IndexOf(":") + 2, (line.Length - (line.IndexOf(":") + 1)) - 2);
+                                if (log == "ON")
+                                {
+                                    this.ENABLE_ERR_LOG = true;
+                                }
+                                else if (log == "OFF")
+                                {
+                                    this.ENABLE_ERR_LOG = false;
+                                }
+                            }
+                        } else if (line.StartsWith("WELCOME_MESSAGE:"))
+                        {
+                            if (line.EndsWith(";"))
+                            {
+                                string log = null;
+                                log = line.Substring(line.IndexOf(":") + 2, (line.Length - (line.IndexOf(":") + 1)) - 2);
+                                if (log == "ON")
+                                {
+                                    this.DISPLAY_WELCOME_MSG = true;
+                                }
+                                else if (log == "OFF")
+                                {
+                                    this.DISPLAY_WELCOME_MSG = false;
+                                }
+                            }
                         }
                         else if (FoundEnvi)
                         {
@@ -122,13 +174,30 @@ namespace Rashell
                              + "Use it to add further relations, references and to tweak settings. \n \n"
                              + "Restart is required after this file is modified. \n \n"
                              + "WARNING... This configuration file is version specific (for v0.2) \n"
-                             + "You may need to migrate your chamges after you update Rashell \n"
+                             + "You may need to migrate your chamges after you update Rashell. \n\n" 
+                             + "Character \":\" Denotes a commented line.\n"
                              + "----------------------------------------------------------------------- \n \n"
                              + "---Definition of Environment Paths \n \n"
                              + "ENVIRONMENT_PATHS {\n\t"
                              + "%SYSTEMROOT%;\n\t"
                              + "%SYSTEMROOT%\\SYSTEM32;\n" 
-                             + "}";
+                             + "}\n\n"
+                             + "---Definition of Known Executables\n\n"
+                             + "KNOWN_EXECUTABLES {\n\t"
+                             + ".EXE;\n\t"
+                             + ".BAT;\n\t" 
+                             + ".CMD;\n" 
+                             + ";\n\n"
+                             + "---Definition of Default Working Directory\n\n"
+                             + "DEF_WORKING_DIR = %userprofile%;\n\n" 
+                             + "---Toggle Logging\n\n"
+                             + "ENABLE_EVT_LOGGING: ON;\n"
+                             + ":ENABLE_EVT_LOGGING: OFF;\n\n"
+                             + "ENABLE_ERR_LOGGING: ON;\n"
+                             + ":ENABLE_ERR_LOGGING: OFF;\n\n"
+                             + "---Toggle Welcome Message\n\n" 
+                             + "WELCOME_MESSAGE: ON;\n" 
+                             + ":WELCOME_MESSAGE: OFF;";
 
             if (!File.Exists(this.config_path))
             {
@@ -181,6 +250,12 @@ namespace Rashell
         {
             return this.DEF_WORKING_DIR;
         }
+
+        public bool DisplayMSG()
+        {
+            return this.DISPLAY_WELCOME_MSG;
+        }
     }
   
 }
+
