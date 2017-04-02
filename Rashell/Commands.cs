@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Rashell
 {
-    class Commands
+    internal class Commands
     {
         public bool Clear()
         {
@@ -25,6 +25,32 @@ namespace Rashell
             try
             {
                 Environment.Exit(0);
+            }
+            catch (Exception E)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool Time()
+        {
+            try
+            {
+                Console.WriteLine("The current time is: " + DateTime.Now.ToString("HH:mm:ss:fff") + "\n");
+            }
+            catch (Exception E)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool Date()
+        {
+            try
+            {
+                Console.WriteLine("The current date is: " + DateTime.Now.ToLongDateString() + "\n");
             }
             catch (Exception E)
             {
