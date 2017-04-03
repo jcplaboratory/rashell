@@ -72,7 +72,7 @@ namespace Rashell
                         }
                         else if (p == "/about")
                         {
-                            Console.WriteLine("\"" + "mkdir" + "\"" + " is developed by Arwin Neil Baichoo \n" + "(c) 2017");
+                            Console.WriteLine("\"" + "mkdir" + "\"" + " is developed by Arwin Neil Baichoo \n" + "(c) 2017 \n");
                         }
                         else
                         {
