@@ -12,7 +12,7 @@ namespace Rashell
 
         #region "Executors"
 
-        public void exec_in(string command)
+        public void exec_in(string command, List<string> Arguments)
         {
             switch (command)
             {

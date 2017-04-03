@@ -5,13 +5,14 @@ using System.IO;
 
 namespace Rashell
 {
-    class Rashell
+    internal class Rashell
     {
         private List<string> EnvironmentPaths = new List<string>();
         private List<string> KnownExtensions = new List<string>();
         private string DEF_WORKING_DIR;
-    
+
         #region "Initialization"
+
         private void Init()
         {
             string version = "0.2a";
@@ -22,20 +23,21 @@ namespace Rashell
             string sys_usr_short = null;
             bool use_short = false;
 
-           
-
             if (sys_usr.IndexOf(" ") > 0)
             {
                 sys_usr_short = sys_usr.Substring(0, sys_usr.IndexOf(" "));
                 use_short = true;
-            } else { sys_usr_short = null; }
+            }
+            else { sys_usr_short = null; }
 
             string sys_arch = null;
 
             if (Environment.Is64BitOperatingSystem)
             {
                 sys_arch = "x86-x64";
-            } else {
+            }
+            else
+            {
                 sys_arch = "x86";
             }
 
@@ -47,8 +49,8 @@ namespace Rashell
             this.DEF_WORKING_DIR = config.GetWorkingDir();
 
             //Console default settings
-            Console.Title = "Rashell | ~v " + version + " | " + "~m " + machine + " | "+ platform + " | " + sys_arch;
-            
+            Console.Title = "Rashell | ~v " + version + " | " + "~m " + machine + " | " + platform + " | " + sys_arch;
+
             Console.BackgroundColor = ConsoleColor.DarkMagenta;
             Console.Clear();
 
@@ -56,7 +58,6 @@ namespace Rashell
             {
                 DisplayWelcome(version);
             }
-            
 
             if (string.IsNullOrEmpty(this.DEF_WORKING_DIR) || string.IsNullOrWhiteSpace(this.DEF_WORKING_DIR))
             {
@@ -69,12 +70,14 @@ namespace Rashell
             {
                 Console.Write(sys_usr_short + "@" + "rashell:>");
                 ShellWorkingDirectory = sys_usr_short + "@" + "rashell:>";
-            } else {
+            }
+            else
+            {
                 Console.Write(sys_usr + "@" + "rashell:>");
                 ShellWorkingDirectory = sys_usr + "@" + "rashell:>";
             }
-           
         }
+
         private void Listen()
         {
             string stdin = null;
@@ -100,7 +103,7 @@ namespace Rashell
                 string read = null;
                 if (!rm.Equals(0))
                 {
-                    append: //append stdin until comma is even
+                append: //append stdin until comma is even
                     Console.Write(":>");
                     read = Console.ReadLine();
                     bool found = false;
@@ -131,6 +134,7 @@ namespace Rashell
                 goto Start;
             }
         }
+
         private void DisplayWelcome(string version)
         {
             string msg = null;
@@ -139,9 +143,11 @@ namespace Rashell
                   + "2008-2017 J.C.P Laboratory, Under CPGSL V4.\n";
             Console.WriteLine(msg);
         }
-        #endregion
+
+        #endregion "Initialization"
 
         #region "Session Vars"
+
         protected string WorkingDir;
         protected string ShellWorkingDir;
 
@@ -156,9 +162,11 @@ namespace Rashell
             get { return ShellWorkingDir; }
             set { ShellWorkingDir = value; }
         }
-        #endregion
+
+        #endregion "Session Vars"
 
         #region "Loaders"
+
         public void Starter(string stdin)
         {
             Formatters format = new Formatters();
@@ -170,8 +178,10 @@ namespace Rashell
             {
                 execute.Execute(cmdLoc, format.getArguments());
             }
-            else { execute.exec_in(cmd); }
-
+            else
+            {
+                execute.exec_in(cmd, format.getArguments());
+            }
         }
 
         public string Find(string cmd)
@@ -211,14 +221,9 @@ namespace Rashell
                                     return cmdLoc;
                                 }
                             }
-
-
                         }
                     }
                 }
-
-
-
             }
             else
             {
@@ -227,8 +232,10 @@ namespace Rashell
 
             return null;
         }
-        #endregion;
-        static void Main(string[] args)
+
+        #endregion "Loaders"
+
+        private static void Main(string[] args)
         {
             //Call init functions
             Rashell shell = new Rashell();
