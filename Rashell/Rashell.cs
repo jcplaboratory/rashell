@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 
 namespace Rashell
@@ -84,7 +83,7 @@ namespace Rashell
 
         Start:
             stdin = null;
-            stdin = Console.ReadLine().ToLower();
+            stdin = Console.ReadLine();
 
             if (!string.IsNullOrEmpty(stdin) && !string.IsNullOrWhiteSpace(stdin))
             {
@@ -171,7 +170,7 @@ namespace Rashell
         {
             Formatters format = new Formatters();
             Executor execute = new Executor();
-            string cmd = format.Break(stdin);
+            string cmd = (format.Break(stdin)).ToLower();
             string cmdLoc = Find(cmd);
 
             if (!string.IsNullOrEmpty(cmdLoc))
