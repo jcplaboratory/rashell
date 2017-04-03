@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-
-
 namespace Rashell
 {
-    class Executor
+    internal class Executor
     {
         protected Commands command = new Commands();
-        Formatters format = new Formatters();
-        Rashell shell = new Rashell();
+        private Formatters format = new Formatters();
+        private Rashell shell = new Rashell();
+
         #region "Executors"
-       
 
         public void exec_in(string command)
         {
@@ -21,25 +19,35 @@ namespace Rashell
                 case "clear":
                     this.command.Clear();
                     break;
+
                 case "bye":
                     this.command.Exit();
                     break;
+
                 case "quit":
                     this.command.Exit();
                     break;
+
                 case "exit":
                     this.command.Exit();
                     break;
+
+                case "time":
+                    this.command.Time();
+                    break;
+
+                case "date":
+                    this.command.Date();
+                    break;
+
                 default:
                     Console.WriteLine("Command or Operator " + "\"" + command + "\"" + " not found." + "\n Check syntax.");
                     break;
-
             }
         }
 
-        public bool Execute(string cmd, List<string>arguments)
+        public bool Execute(string cmd, List<string> arguments)
         {
-
             int argsCt = arguments.Count;
             string Arguments = null;
 
@@ -76,7 +84,6 @@ namespace Rashell
 
             //while (!process.HasExited)
             //{
-
             //    string stdin = null;
             //    stdin = Console.ReadLine();
             //    if (!string.IsNullOrEmpty(stdin))
@@ -99,15 +106,11 @@ namespace Rashell
 
             //}
 
-
             process.WaitForExit();
 
             return true;
         }
-        #endregion
 
-     
-        
+        #endregion "Executors"
     }
 }
-
