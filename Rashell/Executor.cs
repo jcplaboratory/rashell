@@ -40,6 +40,10 @@ namespace Rashell
                     this.command.Date();
                     break;
 
+                case "mkdir":
+                    this.command.Mkdir(Arguments);
+                    break;
+
                 default:
                     Console.WriteLine("Command or Operator " + "\"" + command + "\"" + " not found." + "\n Check syntax.");
                     break;
