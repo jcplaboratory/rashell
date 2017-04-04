@@ -12,7 +12,7 @@ namespace Rashell
 
         #region "Executors"
 
-        public void exec_in(string command)
+        public void exec_in(string command, List<string> Arguments)
         {
             switch (command)
             {
@@ -38,6 +38,10 @@ namespace Rashell
 
                 case "date":
                     this.command.Date();
+                    break;
+
+                case "mkdir":
+                    this.command.Mkdir(Arguments);
                     break;
 
                 default:
