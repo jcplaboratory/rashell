@@ -9,6 +9,7 @@ namespace Rashell
         private List<string> EnvironmentPaths = new List<string>();
         private List<string> KnownExtensions = new List<string>();
         private string DEF_WORKING_DIR;
+        static string ShellWorkingDirectory = null;
 
         #region "Initialization"
 
@@ -16,18 +17,9 @@ namespace Rashell
         {
             string version = "0.2a";
             string platform = Environment.OSVersion.ToString();
-            string sys_usr = Environment.UserName.ToString().ToLower();
+            string sessionUser = getSessionUser();
             string user_home = Environment.ExpandEnvironmentVariables("%userprofile%");
             string machine = Environment.MachineName.ToString();
-            string sys_usr_short = null;
-            bool use_short = false;
-
-            if (sys_usr.IndexOf(" ") > 0)
-            {
-                sys_usr_short = sys_usr.Substring(0, sys_usr.IndexOf(" "));
-                use_short = true;
-            }
-            else { sys_usr_short = null; }
 
             string sys_arch = null;
 
@@ -60,21 +52,15 @@ namespace Rashell
 
             if (string.IsNullOrEmpty(this.DEF_WORKING_DIR) || string.IsNullOrWhiteSpace(this.DEF_WORKING_DIR))
             {
-                WorkingDirectory = user_home;
+               ShellSessionDirectory = user_home;
             }
             else
-            { WorkingDirectory = this.DEF_WORKING_DIR; }
+            { ShellSessionDirectory = this.DEF_WORKING_DIR; }
 
-            if (use_short)
-            {
-                Console.Write(sys_usr_short + "@" + "rashell:>");
-                ShellWorkingDirectory = sys_usr_short + "@" + "rashell:>";
-            }
-            else
-            {
-                Console.Write(sys_usr + "@" + "rashell:>");
-                ShellWorkingDirectory = sys_usr + "@" + "rashell:>";
-            }
+            //apply default working directory
+            Directory.SetCurrentDirectory(ShellSessionDirectory);
+            UpdateShellWorkingDirectory(sessionUser, ShellSessionDirectory, true);
+
         }
 
         private void Listen()
@@ -147,20 +133,81 @@ namespace Rashell
 
         #region "Session Vars"
 
-        protected string WorkingDir;
-        protected string ShellWorkingDir;
+        //protected string WorkingDir;
+        //protected string ShellWorkingDir;
 
-        public string WorkingDirectory
+        //public string WorkingDirectory
+        //{
+        //    get { return WorkingDir; }
+        //    set { WorkingDir = value; }
+        //}
+
+        public static string ShellSessionDirectory
         {
-            get { return WorkingDir; }
-            set { WorkingDir = value; }
+            get
+            {
+                return ShellWorkingDirectory;
+            }
+            set
+            {
+                ShellWorkingDirectory = value;
+            }
         }
 
-        public string ShellWorkingDirectory
+
+        private bool UpdateShellWorkingDirectory(string username, string directory, bool reset)
         {
-            get { return ShellWorkingDir; }
-            set { ShellWorkingDir = value; }
+            directory = directory.ToLower();
+
+            if (directory == Environment.ExpandEnvironmentVariables("%userprofile%").ToLower())
+            {
+                ShellWorkingDirectory = username + "@" + "rashell:>";
+            } else
+            {
+                ShellWorkingDirectory = username + "@" + "rashell:" + directory + ">";
+            }
+
+            if (reset)
+            {
+                Console.Write(ShellWorkingDirectory);
+            }
+
+            return true;
         }
+
+        public string setShellWorkingDirectory(string username, string directory)
+        {
+            directory = directory.ToLower();
+
+            if (directory == Environment.ExpandEnvironmentVariables("%userprofile%").ToLower())
+            {
+                ShellWorkingDirectory = username + "@" + "rashell:>";
+            }
+            else
+            {
+                ShellWorkingDirectory = username + "@" + "rashell:" + directory + ">";
+            }
+
+            return ShellWorkingDirectory;
+        }
+
+        public string getSessionUser()
+        {
+            string sys_usr = Environment.UserName.ToString().ToLower();
+            string sys_usr_short = null;
+       
+
+            if (sys_usr.IndexOf(" ") > 0)
+            {
+                sys_usr_short = sys_usr.Substring(0, sys_usr.IndexOf(" "));
+                return sys_usr_short;
+            }
+            else {
+                sys_usr_short = null;
+            }
+
+            return sys_usr;
+        } 
 
         #endregion "Session Vars"
 

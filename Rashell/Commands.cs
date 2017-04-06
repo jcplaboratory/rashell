@@ -317,5 +317,34 @@ namespace Rashell
             }
             return true;
         }
+
+        public bool cd(List<string> directory)
+        {
+            Formatters format = new Formatters();
+            Rashell shell = new Rashell();
+
+            if (directory.Count != 0)
+            {
+                try
+                {
+                    string dir = format.RemoveSpace(directory[0].ToLower());
+
+                    if (!string.IsNullOrEmpty(dir) && !string.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
+                    {
+                        Directory.SetCurrentDirectory(dir);
+
+                        string workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), dir);
+                        Rashell.ShellSessionDirectory = workdir;
+                    } else
+                    {
+                        Console.WriteLine("The directory you specified is invalid.");
+                    }
+                }catch (Exception e)
+                {
+
+                }
+            }
+            return true;
+        }
     }
 }

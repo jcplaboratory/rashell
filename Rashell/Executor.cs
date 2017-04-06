@@ -46,6 +46,9 @@ namespace Rashell
                 case "ls":
                     this.command.ls(Arguments);
                     break;
+                case "cd":
+                    this.command.cd(Arguments);
+                    break;
 
                 default:
                     Console.WriteLine("Command or Operator " + "\"" + command + "\"" + " not found." + "\n Check syntax.");
