@@ -9,3 +9,9 @@ C:\Users\Cedric Poottaren\Documents\Visual Studio 2015\Projects\Rashell\Rashell\
 C:\Users\Cedric Poottaren\Documents\Visual Studio 2015\Projects\Rashell\Rashell\obj\Debug\Rashell.exe
 C:\Users\Cedric Poottaren\Documents\Visual Studio 2015\Projects\Rashell\Rashell\obj\Debug\Rashell.pdb
 C:\Users\Cedric Poottaren\Documents\Visual Studio 2015\Projects\Rashell\Rashell\obj\Debug\Rashell.csprojResolveAssemblyReference.cache
+C:\Users\cedri\Repos\rashell\Rashell\bin\Debug\Rashell.exe.config
+C:\Users\cedri\Repos\rashell\Rashell\bin\Debug\Rashell.exe
+C:\Users\cedri\Repos\rashell\Rashell\bin\Debug\Rashell.pdb
+C:\Users\cedri\Repos\rashell\Rashell\obj\Debug\Rashell.csprojResolveAssemblyReference.cache
+C:\Users\cedri\Repos\rashell\Rashell\obj\Debug\Rashell.exe
+C:\Users\cedri\Repos\rashell\Rashell\obj\Debug\Rashell.pdb

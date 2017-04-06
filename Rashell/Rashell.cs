@@ -170,7 +170,7 @@ namespace Rashell
         {
             Formatters format = new Formatters();
             Executor execute = new Executor();
-            string cmd = (format.Break(stdin)).ToLower();
+            string cmd = (format.Break(stdin)).ToLower(); //Converting command to lowercase
             string cmdLoc = Find(cmd);
 
             if (!string.IsNullOrEmpty(cmdLoc))

@@ -193,6 +193,18 @@ namespace Rashell
             }
             return spaces;
         }
+        public void ConsoleColorWrite(string value, ConsoleColor color)
+        {
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.ForegroundColor = color;
+            Console.WriteLine(value.PadRight(Console.WindowWidth - 1)); // <-- see note
+                                                                        //
+                                                                        // Reset the color.
+                                                                        //
+            //Reset Color
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
         #endregion
     }
 }
