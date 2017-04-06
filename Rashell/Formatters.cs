@@ -105,8 +105,6 @@ namespace Rashell
             return args[0];
         }
 
-        
-
         public List<string> getArguments()
         {
             return this.arguments;
@@ -149,6 +147,7 @@ namespace Rashell
            
             return newStdin;
         }
+
         public string RemoveTab(string stdin)
         {
             //count and remove redundant spaces.
@@ -181,6 +180,7 @@ namespace Rashell
                
             return newStdin;
         }
+
         public int CountSpaces(string stdin)
         {
             int spaces = 0;
@@ -193,6 +193,7 @@ namespace Rashell
             }
             return spaces;
         }
+
         public void ConsoleColorWrite(string value, ConsoleColor color)
         {
             Console.BackgroundColor = ConsoleColor.DarkMagenta;

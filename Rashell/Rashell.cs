@@ -133,15 +133,6 @@ namespace Rashell
 
         #region "Session Vars"
 
-        //protected string WorkingDir;
-        //protected string ShellWorkingDir;
-
-        //public string WorkingDirectory
-        //{
-        //    get { return WorkingDir; }
-        //    set { WorkingDir = value; }
-        //}
-
         public static string ShellSessionDirectory
         {
             get
@@ -233,6 +224,10 @@ namespace Rashell
         public string Find(string cmd)
         {
             string cmdLoc = null;
+            List<string> AllPaths = new List<string>();
+
+            AllPaths = this.EnvironmentPaths;
+            AllPaths.Add(ShellWorkingDirectory);
 
             if (!File.Exists(cmd))
             {
@@ -245,7 +240,7 @@ namespace Rashell
                     }
                     else
                     {
-                        foreach (string path in this.EnvironmentPaths)
+                        foreach (string path in AllPaths)
                         {
                             if (!Path.HasExtension(cmd)) //Check is extension is already present in path
                             {
