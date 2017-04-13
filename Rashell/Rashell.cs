@@ -125,7 +125,7 @@ namespace Rashell
             string msg = null;
             msg = "Rashell Dynamic Command Processor\n"
                   + "Version " + version + "\n"
-                  + "2008-2017 J.C.P Laboratory, Under CPGSL V4.\n";
+                  + "(c) 2008-2017 J.C.P Laboratory, Under CPGSL V4.\n";
             Console.WriteLine(msg);
         }
 

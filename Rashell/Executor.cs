@@ -6,7 +6,7 @@ namespace Rashell
 {
     internal class Executor
     {
-        protected Commands command = new Commands();
+        protected Command command = new Command();
         private Formatters format = new Formatters();
         private Rashell shell = new Rashell();
 
@@ -44,7 +44,7 @@ namespace Rashell
                     this.command.Mkdir(Arguments);
                     break;
                 case "ls":
-                    this.command.ls(Arguments);
+                    this.command.Ls(Arguments);
                     break;
                 case "cd":
                     this.command.cd(Arguments);
