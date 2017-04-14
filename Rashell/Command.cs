@@ -71,39 +71,17 @@ namespace Rashell
             return true;
         }
 
-        public bool Mkdir(List<string> dir_paths)
+        public bool Mkdir(List<string> arguments)
         {
-            try
+            mkdir MKDIR = new mkdir();
+
+            if (MKDIR.main(arguments))
             {
-                if (dir_paths.Count != 0)
-                {
-                    foreach (string p in dir_paths)
-                    {
-                        if (Directory.Exists(p))
-                        {
-                            Console.WriteLine("A subdirectory or file " + p + " already exists. \n");
-                        }
-                        else if (p == "/about")
-                        {
-                            Console.WriteLine("\"" + "mkdir" + "\"" + " is developed by Arwin Neil Baichoo \n" + "(c) 2017 \n");
-                        }
-                        else
-                        {
-                            Directory.CreateDirectory(p);
-                        }
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("The syntax of the command is incorrect. \n");
-                    return false;
-                }
-            }
-            catch (Exception E)
+                return true;
+            } else
             {
                 return false;
-            }
-            return true;
+            }      
         }
 
         public bool cd(List<string> directory)
@@ -132,6 +110,13 @@ namespace Rashell
 
                 }
             }
+            return true;
+        }
+
+        public bool pwd()
+        {
+            string pwd = Directory.GetCurrentDirectory().ToString();
+            Console.WriteLine("Working Directory: \"" + pwd + "\".");
             return true;
         }
     }

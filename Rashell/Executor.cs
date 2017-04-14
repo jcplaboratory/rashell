@@ -49,9 +49,12 @@ namespace Rashell
                 case "cd":
                     this.command.cd(Arguments);
                     break;
+                case "pwd":
+                    this.command.pwd();
+                    break;
 
                 default:
-                    Console.WriteLine("Command or Operator " + "\"" + command + "\"" + " not found." + "\n Check syntax.");
+                    Console.WriteLine("Command or Operator " + "\"" + command + "\"" + " not found." + "\nCheck syntax.");
                     break;
             }
         }
@@ -67,14 +70,17 @@ namespace Rashell
             }
 
             Process process = new Process();
+            ProcessStartInfo property = new ProcessStartInfo(cmd)
+            {
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                RedirectStandardInput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                Arguments = Arguments,
+            };
 
-            process.StartInfo.RedirectStandardError = true;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardInput = true;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.FileName = cmd;
-            process.StartInfo.Arguments = Arguments;
+            process.StartInfo = property;
 
             process.OutputDataReceived += new DataReceivedEventHandler(
                 (s, e) =>
@@ -89,8 +95,42 @@ namespace Rashell
                 }
             );
 
-            process.Start();
-            process.BeginOutputReadLine();
+
+            try
+            {
+                process.Start();
+                process.BeginOutputReadLine();
+
+                process.WaitForExit();
+            } catch (Exception x)
+            {
+                if (x.ToString().Contains("requires elevation"))
+                {
+                    Console.WriteLine("Rashell: Unable to start application \"" + cmd + "\"" + ".");
+                    format.ConsoleColorWrite("Requires Elevation", ConsoleColor.Red);
+
+                    Console.Write("You want to restart Rashell with Elevated Priviledges? (Y/N):");
+                    string reply = Console.ReadLine().ToLower();
+
+                    reply = format.RemoveTab(reply);
+                    reply = format.RemoveSpace(reply);
+
+                    if (reply == "y" || reply == "yes")
+                    {
+                        shell.restartAsAdmin();
+                    }
+
+
+                } else if (x.ToString().Contains("specified executable is not a valid")) {
+                    Console.WriteLine("Rashell: Unable to start \"" + cmd + "\"" + ".");
+                    format.ConsoleColorWrite("Invalid File Type", ConsoleColor.Red);
+                } else
+                {
+                    Console.WriteLine("Rashell: Unable to start \"" + cmd + "\"" + ".");
+                    format.ConsoleColorWrite("Unknown Error", ConsoleColor.Yellow);
+                }
+            }
+            
 
             //while (!process.HasExited)
             //{
@@ -115,8 +155,6 @@ namespace Rashell
             //    }
 
             //}
-
-            process.WaitForExit();
 
             return true;
         }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Security.Principal;
 
 namespace Rashell
 {
@@ -125,7 +127,7 @@ namespace Rashell
             string msg = null;
             msg = "Rashell Dynamic Command Processor\n"
                   + "Version " + version + "\n"
-                  + "(c) 2008-2017 J.C.P Laboratory, Under CPGSL V4.\n";
+                  + "(c) 2008-2017 J.C.P Laboratory, Under CPGSL v4.\n";
             Console.WriteLine(msg);
         }
 
@@ -204,12 +206,48 @@ namespace Rashell
 
         #region "Loaders"
 
-        public void Starter(string stdin)
+        public bool Starter(string stdin)
         {
             Formatters format = new Formatters();
             Executor execute = new Executor();
-            string cmd = (format.Break(stdin)).ToLower(); //Converting command to lowercase
-            string cmdLoc = Find(cmd);
+            string cmd, cmdLoc;
+            char[] InvalidChars = Path.GetInvalidPathChars();
+
+            //check invalid characters
+            string invalidChr = null;
+            foreach (char chr in InvalidChars)
+            {
+                if (stdin.Contains(chr.ToString()))
+                {
+                    if (invalidChr == null)
+                    {
+                        invalidChr = chr.ToString();
+                    } else
+                    {
+                        invalidChr += ", " + chr.ToString();
+                    }
+                }
+            }
+
+            invalidChr = format.RemoveSpace(invalidChr);
+            if (!string.IsNullOrEmpty(invalidChr) && !string.IsNullOrWhiteSpace(invalidChr))
+            {
+                Console.WriteLine("Rashell: Wrong Syntax detected.");
+                format.ConsoleColorWrite("Invalid Character(s): \"" + invalidChr + "\"", ConsoleColor.Red);
+                return false;
+            }
+            //check ends
+
+            //Converting command to lowercase
+            if (format.Break(stdin) != null)
+            {
+                cmd = format.Break(stdin).ToLower();
+            } else
+            {
+                return false;
+            }
+
+            cmdLoc = Find(cmd);
 
             if (!string.IsNullOrEmpty(cmdLoc))
             {
@@ -219,13 +257,15 @@ namespace Rashell
             {
                 execute.exec_in(cmd, format.getArguments());
             }
+
+            return true;
         }
 
         public string Find(string cmd)
         {
             string cmdLoc = null;
             List<string> AllPaths = new List<string>();
-
+           
             AllPaths = this.EnvironmentPaths;
             AllPaths.Add(ShellWorkingDirectory);
 
@@ -272,6 +312,27 @@ namespace Rashell
             }
 
             return null;
+        }
+
+        private static bool IsAdministrator()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        public void restartAsAdmin()
+        {
+            if (IsAdministrator() == false)
+            {
+                // Restart program and run as admin
+                var exeName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
+                startInfo.Verb = "runas";
+                System.Diagnostics.Process.Start(startInfo);
+                Environment.Exit(0);
+                return;
+            }
         }
 
         #endregion "Loaders"

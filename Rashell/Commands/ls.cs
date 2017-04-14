@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Rashell.Commands
 {
-    class ls
+    class ls : Command
     {
         private Formatters format = new Formatters();
 
