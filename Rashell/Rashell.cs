@@ -12,7 +12,7 @@ namespace Rashell
         private List<string> KnownExtensions = new List<string>();
         private string DEF_WORKING_DIR;
         static string ShellWorkingDirectory = null;
-
+        private static Formatters format = new Formatters();
         #region "Initialization"
 
         private void Init()
@@ -217,16 +217,20 @@ namespace Rashell
             string invalidChr = null;
             foreach (char chr in InvalidChars)
             {
-                if (stdin.Contains(chr.ToString()))
+                if (chr.ToString() != "\"")
                 {
-                    if (invalidChr == null)
+                    if (stdin.Contains(chr.ToString()))
                     {
-                        invalidChr = chr.ToString();
-                    } else
-                    {
-                        invalidChr += ", " + chr.ToString();
+                        if (invalidChr == null)
+                        {
+                            invalidChr = chr.ToString();
+                        }
+                        else
+                        {
+                            invalidChr += ", " + chr.ToString();
+                        }
                     }
-                }
+                } 
             }
 
             invalidChr = format.RemoveSpace(invalidChr);
@@ -325,13 +329,28 @@ namespace Rashell
         {
             if (IsAdministrator() == false)
             {
-                // Restart program and run as admin
-                var exeName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-                ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
-                startInfo.Verb = "runas";
-                System.Diagnostics.Process.Start(startInfo);
-                Environment.Exit(0);
-                return;
+                try
+                {
+                    // Restart program and run as admin
+                    var exeName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                    ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
+                    startInfo.Verb = "runas";
+                    System.Diagnostics.Process.Start(startInfo);
+                    Environment.Exit(0);
+                    return;
+                }
+                catch (Exception e)
+                {
+                    if (e.ToString().Contains("The operation was canceled by the user"))
+                    {
+                        Console.WriteLine("Rashell: Operation unsuccessful.");
+                        format.ConsoleColorWrite("User Denied Operation", ConsoleColor.Red);
+                    } else
+                    {
+                        Console.WriteLine("Rashell: Operation unsuccessful.");
+                        format.ConsoleColorWrite("Unknown Error", ConsoleColor.Yellow);
+                    }
+                }
             }
         }
 
