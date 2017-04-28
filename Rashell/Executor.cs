@@ -52,6 +52,12 @@ namespace Rashell
                 case "pwd":
                     this.command.pwd();
                     break;
+                case "echo":
+                    this.command.echo(Arguments);
+                    break;
+                case "whoiam":
+                    this.command.whoami();
+                    break;
 
                 default:
                     Console.WriteLine("Command or Operator " + "\"" + command + "\"" + " not found." + "\nCheck syntax.");
@@ -107,7 +113,7 @@ namespace Rashell
                 if (x.ToString().Contains("requires elevation"))
                 {
                     Console.WriteLine("Rashell: Unable to start application \"" + cmd + "\"" + ".");
-                    format.ConsoleColorWrite("Requires Elevation", ConsoleColor.Red);
+                    format.ConsoleColorWrite("Requires Elevation", ConsoleColor.Red, false);
 
                     Console.Write("You want to restart Rashell with Elevated Priviledges? (Y/N):");
                     string reply = Console.ReadLine().ToLower();
@@ -123,11 +129,11 @@ namespace Rashell
 
                 } else if (x.ToString().Contains("specified executable is not a valid")) {
                     Console.WriteLine("Rashell: Unable to start \"" + cmd + "\"" + ".");
-                    format.ConsoleColorWrite("Invalid File Type", ConsoleColor.Red);
+                    format.ConsoleColorWrite("Invalid File Type", ConsoleColor.Red, false);
                 } else
                 {
                     Console.WriteLine("Rashell: Unable to start \"" + cmd + "\"" + ".");
-                    format.ConsoleColorWrite("Unknown Error", ConsoleColor.Yellow);
+                    format.ConsoleColorWrite("Unknown Error", ConsoleColor.Yellow, false);
                 }
             }
             

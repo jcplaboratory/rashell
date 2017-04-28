@@ -119,5 +119,48 @@ namespace Rashell
             Console.WriteLine("Working Directory: \"" + pwd + "\".");
             return true;
         }
+
+        public bool echo(List<string> text)
+        {
+            string output = null;
+            foreach(string txt in text)
+            {
+                if(txt != null)
+                {
+                    if(output == null)
+                    {
+                        output = txt;
+                    }else
+                    {
+                        output += " " + txt;
+                    }
+                }
+            }
+
+            Console.WriteLine(output);
+
+            return true;
+        }
+
+        public bool whoami()
+        {
+            Rashell shell = new Rashell();
+            string user = shell.getSessionUser();
+            string domain = Environment.MachineName.ToString();
+            string profile = "\"" + Environment.ExpandEnvironmentVariables("%userprofile%") + "\"";
+            string sys_user = Environment.UserName.ToString();
+
+            if(shell.IsAdministrator() == false)
+            {
+                Console.WriteLine("Session User: " + user + "\n" + "System User: " + sys_user + "\n" + "Elevation: Standard" + 
+                    "\n" + "Domain: " + domain + "\n" + "Profile: " + profile);
+            } else
+            {
+                Console.WriteLine("Session User: " + user + "\n" + "System User: " + sys_user + "\n" + "Elevation: Administrator" + 
+                    "\n" + "Domain: " + domain + "\n" + "Profile: " + profile);
+            }
+
+            return true;
+        }
     }
 }

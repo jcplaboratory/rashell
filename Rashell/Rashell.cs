@@ -10,9 +10,11 @@ namespace Rashell
     {
         private List<string> EnvironmentPaths = new List<string>();
         private List<string> KnownExtensions = new List<string>();
+        static String[] RashellArguments;
         private string DEF_WORKING_DIR;
         static string ShellWorkingDirectory = null;
         private static Formatters format = new Formatters();
+
         #region "Initialization"
 
         private void Init()
@@ -73,6 +75,7 @@ namespace Rashell
             stdin = null;
             stdin = Console.ReadLine();
 
+
             if (!string.IsNullOrEmpty(stdin) && !string.IsNullOrWhiteSpace(stdin))
             {
                 //Count Double Inverted Commas
@@ -91,7 +94,7 @@ namespace Rashell
                 if (!rm.Equals(0))
                 {
                 append: //append stdin until comma is even
-                    Console.Write(":>");
+                    format.ConsoleColorWrite(":>",ConsoleColor.Cyan, true);
                     read = Console.ReadLine();
                     bool found = false;
                     foreach (char c in read)
@@ -112,23 +115,14 @@ namespace Rashell
                 }
 
                 Starter(stdin);
-                Console.Write(ShellWorkingDirectory);
+                format.ConsoleColorWrite(ShellWorkingDirectory, ConsoleColor.Cyan, true);
                 goto Start;
             }
             else
             {
-                Console.Write(ShellWorkingDirectory);
+                format.ConsoleColorWrite(ShellWorkingDirectory, ConsoleColor.Cyan, true);
                 goto Start;
             }
-        }
-
-        private void DisplayWelcome(string version)
-        {
-            string msg = null;
-            msg = "Rashell Dynamic Command Processor\n"
-                  + "Version " + version + "\n"
-                  + "(c) 2008-2017 J.C.P Laboratory, Under CPGSL v4.\n";
-            Console.WriteLine(msg);
         }
 
         #endregion "Initialization"
@@ -147,7 +141,6 @@ namespace Rashell
             }
         }
 
-
         private bool UpdateShellWorkingDirectory(string username, string directory, bool reset)
         {
             directory = directory.ToLower();
@@ -162,7 +155,7 @@ namespace Rashell
 
             if (reset)
             {
-                Console.Write(ShellWorkingDirectory);
+                format.ConsoleColorWrite(ShellSessionDirectory, ConsoleColor.Cyan, true);
             }
 
             return true;
@@ -200,7 +193,16 @@ namespace Rashell
             }
 
             return sys_usr;
-        } 
+        }
+
+        private void DisplayWelcome(string version)
+        {
+            string msg = null;
+            msg = "Rashell Dynamic Command Processor\n"
+                  + "Version " + version + "\n"
+                  + "(c) 2008-2017 J.C.P Laboratory, Under CPGSL v4.\n";
+            Console.WriteLine(msg);
+        }
 
         #endregion "Session Vars"
 
@@ -211,36 +213,6 @@ namespace Rashell
             Formatters format = new Formatters();
             Executor execute = new Executor();
             string cmd, cmdLoc;
-            char[] InvalidChars = Path.GetInvalidPathChars();
-
-            //check invalid characters
-            string invalidChr = null;
-            foreach (char chr in InvalidChars)
-            {
-                if (chr.ToString() != "\"")
-                {
-                    if (stdin.Contains(chr.ToString()))
-                    {
-                        if (invalidChr == null)
-                        {
-                            invalidChr = chr.ToString();
-                        }
-                        else
-                        {
-                            invalidChr += ", " + chr.ToString();
-                        }
-                    }
-                } 
-            }
-
-            invalidChr = format.RemoveSpace(invalidChr);
-            if (!string.IsNullOrEmpty(invalidChr) && !string.IsNullOrWhiteSpace(invalidChr))
-            {
-                Console.WriteLine("Rashell: Wrong Syntax detected.");
-                format.ConsoleColorWrite("Invalid Character(s): \"" + invalidChr + "\"", ConsoleColor.Red);
-                return false;
-            }
-            //check ends
 
             //Converting command to lowercase
             if (format.Break(stdin) != null)
@@ -272,6 +244,18 @@ namespace Rashell
            
             AllPaths = this.EnvironmentPaths;
             AllPaths.Add(ShellWorkingDirectory);
+            
+            //check invalid chars in cmd
+            string invalidChr = format.GetInvalidChars(cmd);
+
+            if (invalidChr != null)
+            {
+                Console.WriteLine("Rashell: Wrong Syntax detected.");
+
+                format.ConsoleColorWrite("Invalid Character(s): \"" + invalidChr + "\"", ConsoleColor.Red, false);
+                return null;
+            }
+            //check ends
 
             if (!File.Exists(cmd))
             {
@@ -318,7 +302,7 @@ namespace Rashell
             return null;
         }
 
-        private static bool IsAdministrator()
+        public bool IsAdministrator()
         {
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new WindowsPrincipal(identity);
@@ -344,11 +328,11 @@ namespace Rashell
                     if (e.ToString().Contains("The operation was canceled by the user"))
                     {
                         Console.WriteLine("Rashell: Operation unsuccessful.");
-                        format.ConsoleColorWrite("User Denied Operation", ConsoleColor.Red);
+                        format.ConsoleColorWrite("User Denied Operation", ConsoleColor.Red, false);
                     } else
                     {
                         Console.WriteLine("Rashell: Operation unsuccessful.");
-                        format.ConsoleColorWrite("Unknown Error", ConsoleColor.Yellow);
+                        format.ConsoleColorWrite("Unknown Error", ConsoleColor.Yellow, false);
                     }
                 }
             }
@@ -356,13 +340,158 @@ namespace Rashell
 
         #endregion "Loaders"
 
+        #region "Argument Handlers"
+
+        private List<char> getSwitches(String[] args)
+        {
+            List<char> switches = new List<char>();
+            bool rshSwitchFound = false;
+
+            foreach (string arg in args)
+            {
+                try
+                {
+                    string buffer = format.RemoveSpace(arg.ToLower());
+
+                    if (buffer.StartsWith("-") || buffer.StartsWith("/"))
+                    {
+                        if (rshSwitchFound == false)
+                        {
+                            buffer = buffer.Substring(1);
+
+                            foreach (char sw in buffer)
+                            {
+                                switches.Add(sw);
+                            }
+
+                            rshSwitchFound = true;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+
+            return switches;
+        }
+
+        private List<string> getArguments(String[] args)
+        {
+            List<string> arguments = new List<string>();
+            bool FoundRashellSwitches = false;
+
+            if (args.Length != 0)
+            {
+                foreach (string arg in args)
+                {
+                    try
+                    {
+                        string buffer = format.RemoveSpace(arg.ToLower());
+
+                        if (buffer.StartsWith("-") || buffer.StartsWith("/"))
+                        {
+                            if (FoundRashellSwitches)
+                            {
+                                    arguments.Add(buffer.ToString());
+                            }
+
+                            FoundRashellSwitches = true;
+                        }
+                        else if (!buffer.StartsWith("-") && !buffer.StartsWith("/"))
+                        {
+                            arguments.Add(buffer.ToString());
+                        }
+
+
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+            }
+            return arguments;
+        }
+
+        private void ExecArgument()
+        {
+
+            if(RashellArguments.Length == 0) //exit if no argument is parsed to Rashell on startup
+            {
+                return;
+            }
+
+            List<char> switches = new List<char>();
+            List<string> arguments = new List<string>();
+
+            switches = this.getSwitches(RashellArguments);
+            arguments = this.getArguments(RashellArguments);
+
+            if(arguments.Count == 0) //exit if no argument is found
+            {
+                return;
+            }
+
+            //swithes options
+            bool StayAwake = false;
+            bool exec = false;
+
+            foreach (char sw in switches)
+            {
+                string swt = sw.ToString().ToLower();
+
+                if (swt == "e")
+                {
+                    StayAwake = true;
+                }
+                else if (swt == "c")
+                {
+                    exec = true;
+                }
+            }
+
+            //argument execution
+            if (exec)
+            {
+                string args = null;
+                foreach (string arg in arguments)
+                {
+                    if (args == null)
+                    {
+                        args = arg;
+                    }
+                    else
+                    {
+                        args += " " + arg;
+                    }
+                }
+
+                Console.WriteLine(args);
+                Starter(args);
+
+                if (StayAwake == false) { Environment.Exit(0); }
+
+                UpdateShellWorkingDirectory(getSessionUser(), Directory.GetCurrentDirectory(), true);
+
+            }
+
+        }
+
+        #endregion "Argument Handlers"
+
         private static void Main(string[] args)
         {
             //Call init functions
             Rashell shell = new Rashell();
+            //assign shell arguments
+            Rashell.RashellArguments = args;
 
             shell.Init();
+            shell.ExecArgument();
             shell.Listen();
+
         }
     }
 }

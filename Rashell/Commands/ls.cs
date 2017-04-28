@@ -38,7 +38,7 @@ namespace Rashell.Commands
                                     "Use the (-h) switch to reveal hidden files." +
                                     "\nls use different colors to identify the different types of files.\n" +
                                     "\n" +
-                                    "Hidden Directories: Cyan Blue\n" +
+                                    "Hidden Directories: " + "Dark Cyan\n" +
                                     "Other Directories: Green\n" +
                                     "Hidden Files: Yellow\n" +
                                     "Other Files: Grey\n");
@@ -158,7 +158,7 @@ namespace Rashell.Commands
                 {
                     if (ShowHidden)
                     {
-                        format.ConsoleColorWrite(file.Name, ConsoleColor.Yellow);
+                        format.ConsoleColorWrite(file.Name, ConsoleColor.Yellow, false);
                     }
                     countHidden++;
 
@@ -186,14 +186,14 @@ namespace Rashell.Commands
                 {
                     if (ShowHidden)
                     {
-                        format.ConsoleColorWrite(dir.Name, ConsoleColor.Cyan);
+                        format.ConsoleColorWrite(dir.Name, ConsoleColor.DarkCyan, false);
                     }
                     countHiddenDirs++;
 
                 }
                 else if (!attr.Contains("Hidden"))
                 {
-                    format.ConsoleColorWrite(dir.Name, ConsoleColor.Green);
+                    format.ConsoleColorWrite(dir.Name, ConsoleColor.Green, false);
                 }
             }
             return countHiddenDirs;
