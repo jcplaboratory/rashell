@@ -62,7 +62,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands.cs" />
+    <Compile Include="Command.cs" />
+    <Compile Include="Commands\ls.cs" />
+    <Compile Include="Commands\mkdir.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="ConsoleAppManager.cs" />
     <Compile Include="Executor.cs" />
@@ -93,6 +95,7 @@
   <ItemGroup>
     <Content Include="rsh-icon.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

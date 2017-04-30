@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Security.Principal;
 
 namespace Rashell
 {
@@ -8,7 +10,10 @@ namespace Rashell
     {
         private List<string> EnvironmentPaths = new List<string>();
         private List<string> KnownExtensions = new List<string>();
+        static String[] RashellArguments;
         private string DEF_WORKING_DIR;
+        static string ShellWorkingDirectory = null;
+        private static Formatters format = new Formatters();
 
         #region "Initialization"
 
@@ -16,18 +21,9 @@ namespace Rashell
         {
             string version = "0.2a";
             string platform = Environment.OSVersion.ToString();
-            string sys_usr = Environment.UserName.ToString().ToLower();
+            string sessionUser = getSessionUser();
             string user_home = Environment.ExpandEnvironmentVariables("%userprofile%");
             string machine = Environment.MachineName.ToString();
-            string sys_usr_short = null;
-            bool use_short = false;
-
-            if (sys_usr.IndexOf(" ") > 0)
-            {
-                sys_usr_short = sys_usr.Substring(0, sys_usr.IndexOf(" "));
-                use_short = true;
-            }
-            else { sys_usr_short = null; }
 
             string sys_arch = null;
 
@@ -60,21 +56,15 @@ namespace Rashell
 
             if (string.IsNullOrEmpty(this.DEF_WORKING_DIR) || string.IsNullOrWhiteSpace(this.DEF_WORKING_DIR))
             {
-                WorkingDirectory = user_home;
+               ShellSessionDirectory = user_home;
             }
             else
-            { WorkingDirectory = this.DEF_WORKING_DIR; }
+            { ShellSessionDirectory = this.DEF_WORKING_DIR; }
 
-            if (use_short)
-            {
-                Console.Write(sys_usr_short + "@" + "rashell:>");
-                ShellWorkingDirectory = sys_usr_short + "@" + "rashell:>";
-            }
-            else
-            {
-                Console.Write(sys_usr + "@" + "rashell:>");
-                ShellWorkingDirectory = sys_usr + "@" + "rashell:>";
-            }
+            //apply default working directory
+            Directory.SetCurrentDirectory(ShellSessionDirectory);
+            UpdateShellWorkingDirectory(sessionUser, ShellSessionDirectory, true);
+
         }
 
         private void Listen()
@@ -84,6 +74,7 @@ namespace Rashell
         Start:
             stdin = null;
             stdin = Console.ReadLine();
+
 
             if (!string.IsNullOrEmpty(stdin) && !string.IsNullOrWhiteSpace(stdin))
             {
@@ -103,7 +94,7 @@ namespace Rashell
                 if (!rm.Equals(0))
                 {
                 append: //append stdin until comma is even
-                    Console.Write(":>");
+                    format.ConsoleColorWrite(":>",ConsoleColor.Cyan, true);
                     read = Console.ReadLine();
                     bool found = false;
                     foreach (char c in read)
@@ -124,14 +115,84 @@ namespace Rashell
                 }
 
                 Starter(stdin);
-                Console.Write(ShellWorkingDirectory);
+                format.ConsoleColorWrite(ShellWorkingDirectory, ConsoleColor.Cyan, true);
                 goto Start;
             }
             else
             {
-                Console.Write(ShellWorkingDirectory);
+                format.ConsoleColorWrite(ShellWorkingDirectory, ConsoleColor.Cyan, true);
                 goto Start;
             }
+        }
+
+        #endregion "Initialization"
+
+        #region "Session Vars"
+
+        public static string ShellSessionDirectory
+        {
+            get
+            {
+                return ShellWorkingDirectory;
+            }
+            set
+            {
+                ShellWorkingDirectory = value;
+            }
+        }
+
+        private bool UpdateShellWorkingDirectory(string username, string directory, bool reset)
+        {
+            directory = directory.ToLower();
+
+            if (directory == Environment.ExpandEnvironmentVariables("%userprofile%").ToLower())
+            {
+                ShellWorkingDirectory = username + "@" + "rashell:>";
+            } else
+            {
+                ShellWorkingDirectory = username + "@" + "rashell:" + directory + ">";
+            }
+
+            if (reset)
+            {
+                format.ConsoleColorWrite(ShellSessionDirectory, ConsoleColor.Cyan, true);
+            }
+
+            return true;
+        }
+
+        public string setShellWorkingDirectory(string username, string directory)
+        {
+            directory = directory.ToLower();
+
+            if (directory == Environment.ExpandEnvironmentVariables("%userprofile%").ToLower())
+            {
+                ShellWorkingDirectory = username + "@" + "rashell:>";
+            }
+            else
+            {
+                ShellWorkingDirectory = username + "@" + "rashell:" + directory + ">";
+            }
+
+            return ShellWorkingDirectory;
+        }
+
+        public string getSessionUser()
+        {
+            string sys_usr = Environment.UserName.ToString().ToLower();
+            string sys_usr_short = null;
+       
+
+            if (sys_usr.IndexOf(" ") > 0)
+            {
+                sys_usr_short = sys_usr.Substring(0, sys_usr.IndexOf(" "));
+                return sys_usr_short;
+            }
+            else {
+                sys_usr_short = null;
+            }
+
+            return sys_usr;
         }
 
         private void DisplayWelcome(string version)
@@ -139,39 +200,30 @@ namespace Rashell
             string msg = null;
             msg = "Rashell Dynamic Command Processor\n"
                   + "Version " + version + "\n"
-                  + "2008-2017 J.C.P Laboratory, Under CPGSL V4.\n";
+                  + "(c) 2008-2017 J.C.P Laboratory, Under CPGSL v4.\n";
             Console.WriteLine(msg);
-        }
-
-        #endregion "Initialization"
-
-        #region "Session Vars"
-
-        protected string WorkingDir;
-        protected string ShellWorkingDir;
-
-        public string WorkingDirectory
-        {
-            get { return WorkingDir; }
-            set { WorkingDir = value; }
-        }
-
-        public string ShellWorkingDirectory
-        {
-            get { return ShellWorkingDir; }
-            set { ShellWorkingDir = value; }
         }
 
         #endregion "Session Vars"
 
         #region "Loaders"
 
-        public void Starter(string stdin)
+        public bool Starter(string stdin)
         {
             Formatters format = new Formatters();
             Executor execute = new Executor();
-            string cmd = (format.Break(stdin)).ToLower();
-            string cmdLoc = Find(cmd);
+            string cmd, cmdLoc;
+
+            //Converting command to lowercase
+            if (format.Break(stdin) != null)
+            {
+                cmd = format.Break(stdin).ToLower();
+            } else
+            {
+                return false;
+            }
+
+            cmdLoc = Find(cmd);
 
             if (!string.IsNullOrEmpty(cmdLoc))
             {
@@ -181,11 +233,29 @@ namespace Rashell
             {
                 execute.exec_in(cmd, format.getArguments());
             }
+
+            return true;
         }
 
         public string Find(string cmd)
         {
             string cmdLoc = null;
+            List<string> AllPaths = new List<string>();
+           
+            AllPaths = this.EnvironmentPaths;
+            AllPaths.Add(ShellWorkingDirectory);
+            
+            //check invalid chars in cmd
+            string invalidChr = format.GetInvalidChars(cmd);
+
+            if (invalidChr != null)
+            {
+                Console.WriteLine("Rashell: Wrong Syntax detected.");
+
+                format.ConsoleColorWrite("Invalid Character(s): \"" + invalidChr + "\"", ConsoleColor.Red, false);
+                return null;
+            }
+            //check ends
 
             if (!File.Exists(cmd))
             {
@@ -198,7 +268,7 @@ namespace Rashell
                     }
                     else
                     {
-                        foreach (string path in this.EnvironmentPaths)
+                        foreach (string path in AllPaths)
                         {
                             if (!Path.HasExtension(cmd)) //Check is extension is already present in path
                             {
@@ -232,15 +302,196 @@ namespace Rashell
             return null;
         }
 
+        public bool IsAdministrator()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        public void restartAsAdmin()
+        {
+            if (IsAdministrator() == false)
+            {
+                try
+                {
+                    // Restart program and run as admin
+                    var exeName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                    ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
+                    startInfo.Verb = "runas";
+                    System.Diagnostics.Process.Start(startInfo);
+                    Environment.Exit(0);
+                    return;
+                }
+                catch (Exception e)
+                {
+                    if (e.ToString().Contains("The operation was canceled by the user"))
+                    {
+                        Console.WriteLine("Rashell: Operation unsuccessful.");
+                        format.ConsoleColorWrite("User Denied Operation", ConsoleColor.Red, false);
+                    } else
+                    {
+                        Console.WriteLine("Rashell: Operation unsuccessful.");
+                        format.ConsoleColorWrite("Unknown Error", ConsoleColor.Yellow, false);
+                    }
+                }
+            }
+        }
+
         #endregion "Loaders"
+
+        #region "Argument Handlers"
+
+        private List<char> getSwitches(String[] args)
+        {
+            List<char> switches = new List<char>();
+            bool rshSwitchFound = false;
+
+            foreach (string arg in args)
+            {
+                try
+                {
+                    string buffer = format.RemoveSpace(arg.ToLower());
+
+                    if (buffer.StartsWith("-") || buffer.StartsWith("/"))
+                    {
+                        if (rshSwitchFound == false)
+                        {
+                            buffer = buffer.Substring(1);
+
+                            foreach (char sw in buffer)
+                            {
+                                switches.Add(sw);
+                            }
+
+                            rshSwitchFound = true;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+
+            return switches;
+        }
+
+        private List<string> getArguments(String[] args)
+        {
+            List<string> arguments = new List<string>();
+            bool FoundRashellSwitches = false;
+
+            if (args.Length != 0)
+            {
+                foreach (string arg in args)
+                {
+                    try
+                    {
+                        string buffer = format.RemoveSpace(arg.ToLower());
+
+                        if (buffer.StartsWith("-") || buffer.StartsWith("/"))
+                        {
+                            if (FoundRashellSwitches)
+                            {
+                                    arguments.Add(buffer.ToString());
+                            }
+
+                            FoundRashellSwitches = true;
+                        }
+                        else if (!buffer.StartsWith("-") && !buffer.StartsWith("/"))
+                        {
+                            arguments.Add(buffer.ToString());
+                        }
+
+
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+            }
+            return arguments;
+        }
+
+        private void ExecArgument()
+        {
+
+            if(RashellArguments.Length == 0) //exit if no argument is parsed to Rashell on startup
+            {
+                return;
+            }
+
+            List<char> switches = new List<char>();
+            List<string> arguments = new List<string>();
+
+            switches = this.getSwitches(RashellArguments);
+            arguments = this.getArguments(RashellArguments);
+
+            if(arguments.Count == 0) //exit if no argument is found
+            {
+                return;
+            }
+
+            //swithes options
+            bool StayAwake = false;
+            bool exec = false;
+
+            foreach (char sw in switches)
+            {
+                string swt = sw.ToString().ToLower();
+
+                if (swt == "e")
+                {
+                    StayAwake = true;
+                }
+                else if (swt == "c")
+                {
+                    exec = true;
+                }
+            }
+
+            //argument execution
+            if (exec)
+            {
+                string args = null;
+                foreach (string arg in arguments)
+                {
+                    if (args == null)
+                    {
+                        args = arg;
+                    }
+                    else
+                    {
+                        args += " " + arg;
+                    }
+                }
+
+                Console.WriteLine(args);
+                Starter(args);
+
+                if (StayAwake == false) { Environment.Exit(0); }
+
+                UpdateShellWorkingDirectory(getSessionUser(), Directory.GetCurrentDirectory(), true);
+
+            }
+
+        }
+
+        #endregion "Argument Handlers"
 
         private static void Main(string[] args)
         {
             //Call init functions
             Rashell shell = new Rashell();
+            //assign shell arguments
+            Rashell.RashellArguments = args;
 
             shell.Init();
+            shell.ExecArgument();
             shell.Listen();
+
         }
     }
 }

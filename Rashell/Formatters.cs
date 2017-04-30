@@ -11,14 +11,15 @@ namespace Rashell
         #region "Formatters"
         public string Break(string stdin)
         {
-
          
             int spaces = CountSpaces(stdin);
+            int tabs = CountTabs(stdin);
+
             stdin = RemoveTab(stdin);
             stdin = RemoveSpace(stdin); //reload reformatted commands into main stream
             
             //create array to store args
-            string[] args = new string[spaces + 1];
+            string[] args = new string[spaces + tabs + 1];
             args.Initialize();
 
 
@@ -105,8 +106,6 @@ namespace Rashell
             return args[0];
         }
 
-        
-
         public List<string> getArguments()
         {
             return this.arguments;
@@ -149,6 +148,7 @@ namespace Rashell
            
             return newStdin;
         }
+
         public string RemoveTab(string stdin)
         {
             //count and remove redundant spaces.
@@ -181,6 +181,7 @@ namespace Rashell
                
             return newStdin;
         }
+
         public int CountSpaces(string stdin)
         {
             int spaces = 0;
@@ -192,6 +193,86 @@ namespace Rashell
                 }
             }
             return spaces;
+        }
+
+        public int CountTabs(string stdin)
+        {
+            int tabs = 0;
+            foreach (char c in stdin)
+            {
+                if (c.ToString() == "\t")
+                {
+                    tabs++;
+                }
+            }
+            return tabs;
+        }
+
+        public void ConsoleColorWrite(string value, ConsoleColor color, bool InLine)
+        {
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.ForegroundColor = color;
+
+            if (InLine)
+            {
+                Console.Write(value/*PadRight(Console.WindowWidth - 1)*/); // <-- see note
+                                                                            //
+                                                                            // Reset the color.
+                                                                            //
+            } else
+            {
+                Console.WriteLine(value.PadRight(Console.WindowWidth - 1));
+            }
+
+            //Reset Color
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
+
+        public string GetInvalidChars(string stdin)
+        {
+            char[] InvalidChars = Path.GetInvalidPathChars();
+            bool UseLong = false;
+            string invalidChr = null;
+            string Long = null;
+
+            foreach (char chr in InvalidChars)
+            {
+                if (chr.ToString() != "\"")
+                {
+                    if (stdin.Contains(chr.ToString()))
+                    {
+                        if (invalidChr == null)
+                        {
+                            invalidChr = chr.ToString();
+                        }
+                        else
+                        {
+
+                            if (chr.ToString() == "\t")
+                            {
+                                Long = "[TAB]";
+                                UseLong = true;
+                            }
+
+                            if (UseLong)
+                            {
+                                invalidChr += ", " + Long;
+                                UseLong = false;
+                            }
+                            else
+                            {
+                                invalidChr += ", " + chr.ToString();
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            invalidChr = RemoveSpace(invalidChr);
+           
+            return invalidChr;
         }
         #endregion
     }

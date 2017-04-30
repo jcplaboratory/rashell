@@ -187,7 +187,7 @@ namespace Rashell
                              + ".EXE;\n\t"
                              + ".BAT;\n\t" 
                              + ".CMD;\n" 
-                             + ";\n\n"
+                             + "}\n\n"
                              + "---Definition of Default Working Directory\n\n"
                              + "DEF_WORKING_DIR = %userprofile%;\n\n" 
                              + "---Toggle Logging\n\n"
