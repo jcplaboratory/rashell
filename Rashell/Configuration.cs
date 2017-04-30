@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Rashell
 {
-    class Configuration : Rashell
+    internal class Configuration : Rashell
     {
         private string config_dir_path = AppDomain.CurrentDomain.BaseDirectory;
         private string config_path = AppDomain.CurrentDomain.BaseDirectory + "\\config.conf";
@@ -26,7 +27,6 @@ namespace Rashell
             this.ENABLE_EVT_LOG = false;
             this.DISPLAY_WELCOME_MSG = false;
         }
-       
 
         public bool Read()
         {
@@ -34,11 +34,10 @@ namespace Rashell
             bool FoundEnvi = false;
             bool FoundKnown_Ex = false;
             string Working_Dir = null;
-            
-   Start:
+
+        Start:
             if (File.Exists(config_path))
             {
-
                 StreamReader ConfigReader = new StreamReader(this.config_path);
                 while (!ConfigReader.EndOfStream)
                 {
@@ -48,31 +47,31 @@ namespace Rashell
 
                     if (!string.IsNullOrEmpty(line))
                     {
-                        
                         if (line.StartsWith("ENVIRONMENT_PATHS {"))
                         {
                             FoundEnvi = true;
-                        } else if (line.StartsWith("KNOWN_EXECUTABLES {"))
+                        }
+                        else if (line.StartsWith("KNOWN_EXECUTABLES {"))
                         {
                             FoundKnown_Ex = true;
-                        } else if (line.StartsWith("DEF_WORKING_DIR ="))
+                        }
+                        else if (line.StartsWith("DEF_WORKING_DIR ="))
                         {
-                           if (line.EndsWith(";"))
+                            if (line.EndsWith(";"))
                             {
                                 Working_Dir = line.Substring(line.IndexOf("=") + 1, (line.Length - (line.IndexOf("=") + 1)) - 1);
 
                                 if (!string.IsNullOrEmpty(Working_Dir) && !string.IsNullOrWhiteSpace(Working_Dir))
                                 {
-
                                     Working_Dir = format.Break(Working_Dir);
                                     if (Directory.Exists(Working_Dir))
                                     {
                                         this.DEF_WORKING_DIR = Working_Dir;
                                     }
                                 }
-                            } 
-                           
-                        } else if (line.StartsWith("ENABLE_EVT_LOGGING:"))
+                            }
+                        }
+                        else if (line.StartsWith("ENABLE_EVT_LOGGING:"))
                         {
                             if (line.EndsWith(";"))
                             {
@@ -87,10 +86,10 @@ namespace Rashell
                                     this.ENABLE_EVT_LOG = false;
                                 }
                             }
-                            
-                        } else if (line.StartsWith("ENABLE_ERR_LOGGING:"))
+                        }
+                        else if (line.StartsWith("ENABLE_ERR_LOGGING:"))
                         {
-                            if(line.EndsWith(";"))
+                            if (line.EndsWith(";"))
                             {
                                 string log = null;
                                 log = line.Substring(line.IndexOf(":") + 2, (line.Length - (line.IndexOf(":") + 1)) - 2);
@@ -103,7 +102,8 @@ namespace Rashell
                                     this.ENABLE_ERR_LOG = false;
                                 }
                             }
-                        } else if (line.StartsWith("WELCOME_MESSAGE:"))
+                        }
+                        else if (line.StartsWith("WELCOME_MESSAGE:"))
                         {
                             if (line.EndsWith(";"))
                             {
@@ -126,7 +126,7 @@ namespace Rashell
                             {
                                 envipath = line.Substring(0, line.Length - 1);
                                 envipath = format.Break(envipath);
-                                
+
                                 if (Directory.Exists(envipath))
                                 {
                                     this.EnvironmentPaths.Add(envipath);
@@ -136,7 +136,8 @@ namespace Rashell
                             {
                                 FoundEnvi = false;
                             }
-                        } else if (FoundKnown_Ex)
+                        }
+                        else if (FoundKnown_Ex)
                         {
                             string extension = null;
                             if (line.EndsWith(";") && line.Length > 1)
@@ -146,13 +147,12 @@ namespace Rashell
                                 {
                                     this.Known_Extensions.Add(extension);
                                 }
-                                  
                             }
                             else if (line == "}")
                             {
                                 FoundKnown_Ex = false;
                             }
-                        } 
+                        }
                     }
                 }
 
@@ -174,30 +174,45 @@ namespace Rashell
                              + "Use it to add further relations, references and to tweak settings. \n \n"
                              + "Restart is required after this file is modified. \n \n"
                              + "WARNING... This configuration file is version specific (for v0.2) \n"
-                             + "You may need to migrate your chamges after you update Rashell. \n\n" 
+                             + "You may need to migrate your chamges after you update Rashell. \n\n"
                              + "Character \":\" Denotes a commented line.\n"
                              + "----------------------------------------------------------------------- \n \n"
                              + "---Definition of Environment Paths \n \n"
-                             + "ENVIRONMENT_PATHS {\n\t"
-                             + "%SYSTEMROOT%;\n\t"
-                             + "%SYSTEMROOT%\\SYSTEM32;\n" 
-                             + "}\n\n"
-                             + "---Definition of Known Executables\n\n"
-                             + "KNOWN_EXECUTABLES {\n\t"
-                             + ".EXE;\n\t"
-                             + ".BAT;\n\t" 
-                             + ".CMD;\n" 
-                             + "}\n\n"
-                             + "---Definition of Default Working Directory\n\n"
-                             + "DEF_WORKING_DIR = %userprofile%;\n\n" 
-                             + "---Toggle Logging\n\n"
-                             + "ENABLE_EVT_LOGGING: ON;\n"
-                             + ":ENABLE_EVT_LOGGING: OFF;\n\n"
-                             + "ENABLE_ERR_LOGGING: ON;\n"
-                             + ":ENABLE_ERR_LOGGING: OFF;\n\n"
-                             + "---Toggle Welcome Message\n\n" 
-                             + "WELCOME_MESSAGE: ON;\n" 
-                             + ":WELCOME_MESSAGE: OFF;";
+                             + "ENVIRONMENT_PATHS {\n\t";
+
+            string systempaths = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
+
+            int num = systempaths.Count(x => x == ';');
+            string path;
+
+            for (int i = 0; i < num; i++)
+
+            {
+                path = systempaths.Substring(0, systempaths.IndexOf(";"));
+                Default += "\"" + path + "\";\n\t";
+
+                systempaths = systempaths.Remove(0, systempaths.IndexOf(";") + 1);
+            }
+
+            Default += "\"" + systempaths + "\";\n\t";
+
+            Default += "}\n\n"
+                          + "---Definition of Known Executables\n\n"
+                          + "KNOWN_EXECUTABLES {\n\t"
+                          + ".EXE;\n\t"
+                          + ".BAT;\n\t"
+                          + ".CMD;\n"
+                          + ";\n\n"
+                          + "---Definition of Default Working Directory\n\n"
+                          + "DEF_WORKING_DIR = %userprofile%;\n\n"
+                          + "---Toggle Logging\n\n"
+                          + "ENABLE_EVT_LOGGING: ON;\n"
+                          + ":ENABLE_EVT_LOGGING: OFF;\n\n"
+                          + "ENABLE_ERR_LOGGING: ON;\n"
+                          + ":ENABLE_ERR_LOGGING: OFF;\n\n"
+                          + "---Toggle Welcome Message\n\n"
+                          + "WELCOME_MESSAGE: ON;\n"
+                          + ":WELCOME_MESSAGE: OFF;";
 
             if (!File.Exists(this.config_path))
             {
@@ -209,7 +224,6 @@ namespace Rashell
                 }
                 catch (IOException e)
                 {
-
                 }
             }
             else
@@ -225,11 +239,9 @@ namespace Rashell
                         write.Write(Default);
                         write.Close();
                     }
-                    
                 }
                 catch (IOException e)
                 {
-                    
                 }
             }
 
@@ -256,6 +268,4 @@ namespace Rashell
             return this.DISPLAY_WELCOME_MSG;
         }
     }
-  
 }
-
