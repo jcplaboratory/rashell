@@ -50,7 +50,7 @@ Execution via Argument
 --------------------------------------------
 Rashell supports execution via argument.
 
-Here is a list of the currently support switches.
+Here is a list of the currently support switches:
 
 * `-c` This switch tells Rashell that it/she should execute the command specified. (Example: `rashell.exe -c mkdir %userprofile%\folder`).
 * `-e` By default Rashell exits after the command parsed via arguments ends. To prevent that use the switch `-e`. (Example: `rashell.exe -ce mkdir %userprofile%\folder`).
@@ -61,7 +61,7 @@ Built-in commands
 
 Rashell has number of buit-in commands.
 
-Here's a list
+Here's a list:
 
 * `ls` - List all files and directory. Help command (`ls -h`).
 * `mkdir` - Creates a new directory.
