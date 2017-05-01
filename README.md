@@ -4,7 +4,7 @@ It takes cues from the Windows Command Promot (CMD) and from Bash Shell <code>ba
 
 Developers
 --------------------------------------------
-[![jcplaboratory](https://www.jcplaboratory.org/wp-content/uploads/2016/08/nav-banner_ra_large.pngw=250)](http://jcplaboratory.org)
+[![jcplaboratory](https://www.jcplaboratory.org/wp-content/uploads/2016/08/nav-banner_ra_large.png?w=250)](http://jcplaboratory.org)
 
 Rashell is developed by the J.C.P Laboratory <http://jcplaboratory.org>.
 The main developer's are:
