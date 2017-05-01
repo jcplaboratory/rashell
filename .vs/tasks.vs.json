@@ -1,0 +1,15 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskName": "task-ls",
+      "appliesTo": "Rashell/ls.cs",
+      "type": "command"
+    },
+    {
+      "taskName": "task-ls",
+      "appliesTo": "Rashell/Commands/ls.cs",
+      "type": "command"
+    }
+  ]
+}

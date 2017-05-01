@@ -437,6 +437,7 @@ namespace Rashell
             //swithes options
             bool StayAwake = false;
             bool exec = false;
+            bool Verbose = false;
 
             foreach (char sw in switches)
             {
@@ -449,6 +450,9 @@ namespace Rashell
                 else if (swt == "c")
                 {
                     exec = true;
+                } else if (swt == "v")
+                {
+                    Verbose = true;
                 }
             }
 
@@ -468,7 +472,14 @@ namespace Rashell
                     }
                 }
 
-                Console.WriteLine(args);
+                if (Verbose)
+                {
+                    Console.WriteLine(args);
+                } else
+                {
+                    Console.WriteLine("");
+                }
+
                 Starter(args);
 
                 if (StayAwake == false) { Environment.Exit(0); }
