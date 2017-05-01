@@ -35,7 +35,7 @@ Comparison between 'Rashell' and 'cmd'
 --------------------------------------------
 
 * Rashell is fully configurable and user customizable.
-* Rashell supports custom Environment Paths that aren't specifically registered on the machine througth the <code>config.conf</code> file.
+* Rashell supports custom Environment Paths that aren't specifically registered on the machine through the <code>config.conf</code> file.
 * Rashell is able to execute user defined executables.
 * Rashell supports event and error loggin (We're still working on that one).
 * Rashell is open-source.
