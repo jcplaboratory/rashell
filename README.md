@@ -9,7 +9,7 @@ Developers
 Rashell is developed by the J.C.P Laboratory <http://jcplaboratory.org>.
 The main developer's are:
 
-* POOTTAREN Cédric
+* POOTTAREN J. Cédric
 * BAICHOO Arwin Neil
 
 Introduction
