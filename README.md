@@ -43,7 +43,7 @@ Comparison between 'Rashell' and 'cmd'
 Download Rashell
 --------------------------------------------
 
-Either you clone and compile this repository or link on the click below.
+Either you clone and compile this repository or clink on the link below.
 https://github.com/jcplaboratory/rashell/blob/master/Rashell/bin/Debug/Rashell.exe
 
 Execution via Argument
