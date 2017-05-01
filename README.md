@@ -20,7 +20,7 @@ Currently, .NET Framework 4.6 is required to run <code>Rashell</code>.
 
 Recompiling using an older version of .NET should not be a problem.
 <code>Rashell</code> is created to be fully dynamic and customizable.
-Every behaviour of the Shell can be control from a configuration file <code>config.conf</code>. 
+Every behaviour of the Shell can be controlled from a configuration file <code>config.conf</code>. 
 that is found in the startup directory of <code>Rashell</code>.
 
 
@@ -50,7 +50,7 @@ Execution via Argument
 --------------------------------------------
 Rashell supports execution via argument.
 
-Here is a list of the currently support switches:
+Here is a list of the currently supported switches:
 
 * `-c` This switch tells Rashell that it/she should execute the command specified. (Example: `rashell.exe -c mkdir %userprofile%\folder`).
 * `-e` By default Rashell exits after the command parsed via arguments ends. To prevent that, use the switch `-e`. (Example: `rashell.exe -ce mkdir %userprofile%\folder`).
@@ -68,7 +68,7 @@ Here's a list:
 * `cd` - Sets the Current Working Directory.
 * `pwd` - Prints the Current Working Directory.
 * `echo` - Prints a string of characters on screen.
-* `whoiam` -An enhanced version of `whoami`.
+* `whoiam` - An enhanced version of `whoami`.
 * `clear` - Clears the console's screen.
 * `time` - Displays the current time.
 * `date` - Displays the current date.
