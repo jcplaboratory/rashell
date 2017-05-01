@@ -54,7 +54,7 @@ Here is a list of the currently support switches:
 
 * `-c` This switch tells Rashell that it/she should execute the command specified. (Example: `rashell.exe -c mkdir %userprofile%\folder`).
 * `-e` By default Rashell exits after the command parsed via arguments ends. To prevent that, use the switch `-e`. (Example: `rashell.exe -ce mkdir %userprofile%\folder`).
-* `-v` By default Rashell doesn't display the command it executes that are parsed via arguments. To make it/she show the commands use the version (-v) switch. (`Example: rashell.exe -cev mkdir %userprofile%\folder`).
+* `-v` By default Rashell doesn't display the command it executes that are parsed via arguments. To make it/she show the commands use the verbose (-v) switch. (`Example: rashell.exe -cev mkdir %userprofile%\folder`).
 
 Built-in commands
 --------------------------------------------
