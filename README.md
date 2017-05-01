@@ -15,7 +15,7 @@ The main developers are:
 Introduction
 --------------------------------------------
 
-Rashell is developed using Microsoft .NET Framework
+Rashell is developed using Microsoft .NET Framework.
 Currently, .NET Framework 4.6 is required to run <code>Rashell</code>.
 
 Recompiling using an older version of .NET should not be a problem.
