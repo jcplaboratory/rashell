@@ -63,7 +63,7 @@ Rashell has number of buit-in commands.
 
 Here's a list:
 
-* `ls` - List all files and directories. Help command (`ls -h`).
+* `ls` - List all files and directories. Help command (`ls -?`).
 * `mkdir` - Creates a new directory.
 * `cd` - Sets the Current Working Directory.
 * `pwd` - Prints the Current Working Directory.
