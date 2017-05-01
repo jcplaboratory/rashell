@@ -15,13 +15,13 @@ The main developer's are:
 Introduction
 --------------------------------------------
 
-Rashell is developped using Microsoft .NET Framework
+Rashell is developed using Microsoft .NET Framework
 Currently, .NET Framework 4.6 is required to run <code>Rashell</code>.
 
 Recompiling using an older version of .NET should not be a problem.
 <code>Rashell</code> is created to be fully dynamic and customizable.
 Every behaviour of the Shell can be control from a configuration file <code>config.conf</code>. 
-that is found in the root directory of <code>Rashell</code>.
+that is found in the startup directory of <code>Rashell</code>.
 
 
 Licence
@@ -35,7 +35,7 @@ Comparison between 'Rashell' and 'cmd'
 --------------------------------------------
 
 * Rashell is fully configurable and user customizable.
-* Rashell supports custom Environment Paths that aren't machine specifically registered on the machine througth the <code>config.conf</code> file.
+* Rashell supports custom Environment Paths that aren't specifically registered on the machine througth the <code>config.conf</code> file.
 * Rashell is able to execute user defined executables.
 * Rashell supports event and error loggin (We're still working on that one).
 * Rashell is opensource.
@@ -43,7 +43,7 @@ Comparison between 'Rashell' and 'cmd'
 Download Rashell
 --------------------------------------------
 
-Either you clone this and compile this repository or link on the click below.
+Either you clone and compile this repository or link on the click below.
 https://github.com/jcplaboratory/rashell/blob/master/Rashell/bin/Debug/Rashell.exe
 
 Execution via Argument
