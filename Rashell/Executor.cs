@@ -43,18 +43,23 @@ namespace Rashell
                 case "mkdir":
                     this.command.Mkdir(Arguments);
                     break;
+
                 case "ls":
                     this.command.Ls(Arguments);
                     break;
+
                 case "cd":
                     this.command.cd(Arguments);
                     break;
+
                 case "pwd":
                     this.command.pwd();
                     break;
+
                 case "echo":
                     this.command.echo(Arguments);
                     break;
+
                 case "whoiam":
                     this.command.whoami();
                     break;
@@ -101,14 +106,23 @@ namespace Rashell
                 }
             );
 
-
             try
             {
                 process.Start();
                 process.BeginOutputReadLine();
 
-                process.WaitForExit();
-            } catch (Exception x)
+                System.IO.StreamWriter myStreamWriter = process.StandardInput;
+                String inputText = null;
+
+                while (!process.WaitForExit(10))
+                {
+                    inputText = Console.ReadLine();
+                    myStreamWriter.WriteLine(inputText);
+
+                    ;
+                }
+            }
+            catch (Exception x)
             {
                 if (x.ToString().Contains("requires elevation"))
                 {
@@ -125,18 +139,18 @@ namespace Rashell
                     {
                         shell.restartAsAdmin();
                     }
-
-
-                } else if (x.ToString().Contains("specified executable is not a valid")) {
+                }
+                else if (x.ToString().Contains("specified executable is not a valid"))
+                {
                     Console.WriteLine("Rashell: Unable to start \"" + cmd + "\"" + ".");
                     format.ConsoleColorWrite("Invalid File Type", ConsoleColor.Red, false);
-                } else
+                }
+                else
                 {
                     Console.WriteLine("Rashell: Unable to start \"" + cmd + "\"" + ".");
                     format.ConsoleColorWrite("Unknown Error", ConsoleColor.Yellow, false);
                 }
             }
-            
 
             //while (!process.HasExited)
             //{
