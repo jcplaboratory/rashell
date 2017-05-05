@@ -29,7 +29,7 @@ Licence
 
 Rashell is licenced under the CPGSL License Version 4.
 
-[![cpgslv4](https://www.jcplaboratory.org/wp-content/uploads/2017/05/CPGSL-V4-200x.png)](https://www.jcplaboratory.org/products/cpgsl-version-4/)
+[![cpgslv4](https://www.gnu.org/graphics/gplv3-127x51.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 Comparison between 'Rashell' and 'cmd'
 --------------------------------------------
