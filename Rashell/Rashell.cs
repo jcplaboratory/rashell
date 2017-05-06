@@ -19,7 +19,7 @@ namespace Rashell
 
         private void Init()
         {
-            string version = "0.2a";
+            string version = "0.2a Build 350";
             string platform = Environment.OSVersion.ToString();
             string sessionUser = getSessionUser();
             string user_home = Environment.ExpandEnvironmentVariables("%userprofile%");
@@ -200,7 +200,7 @@ namespace Rashell
             string msg = null;
             msg = "Rashell Dynamic Command Processor\n"
                   + "Version " + version + "\n"
-                  + "(c) 2008-2017 J.C.P Laboratory, Under CPGSL v4.\n";
+                  + "(c) 2008-2017 J.C.P Laboratory, Under the GNU General Public License v3.0.\n";
             Console.WriteLine(msg);
         }
 
