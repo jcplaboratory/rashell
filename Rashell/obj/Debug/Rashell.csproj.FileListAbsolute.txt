@@ -14,3 +14,4 @@ C:\Users\cedri\Repos\rashell\Rashell\bin\Debug\Rashell.exe
 C:\Users\cedri\Repos\rashell\Rashell\bin\Debug\Rashell.pdb
 C:\Users\cedri\Repos\rashell\Rashell\obj\Debug\Rashell.exe
 C:\Users\cedri\Repos\rashell\Rashell\obj\Debug\Rashell.pdb
+C:\Users\cedri\Repos\rashell\Rashell\obj\Debug\Rashell.csprojResolveAssemblyReference.cache

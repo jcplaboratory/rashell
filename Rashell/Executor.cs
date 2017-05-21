@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Threading;
 
 namespace Rashell
 {
@@ -72,7 +74,6 @@ namespace Rashell
 
         public bool Execute(string cmd, List<string> arguments)
         {
-            int argsCt = arguments.Count;
             string Arguments = null;
 
             foreach (string arg in arguments)
@@ -93,36 +94,22 @@ namespace Rashell
 
             process.StartInfo = property;
 
-            process.OutputDataReceived += new DataReceivedEventHandler(
-                (s, e) =>
-                {
-                    Console.WriteLine(e.Data);
-                }
-            );
-            process.ErrorDataReceived += new DataReceivedEventHandler(
-                (s, e) =>
-                {
-                    Console.WriteLine(e.Data);
-                }
-            );
+            // Depending on your application you may either prioritize the IO or the exact opposite
+            const ThreadPriority ioPriority = ThreadPriority.Highest;
+            Thread outputThread = new Thread(outputReader) { Name = "ChildIO Output", Priority = ioPriority };
+            Thread errorThread = new Thread(errorReader) { Name = "ChildIO Error", Priority = ioPriority };
+            Thread inputThread = new Thread(inputReader) { Name = "ChildIO Input", Priority = ioPriority };
 
+            // Start the IO threads
             try
             {
                 process.Start();
-                process.BeginOutputReadLine();
+                //start reader threads
+                outputThread.Start(process);
+                errorThread.Start(process);
+                inputThread.Start(process);
 
-                System.IO.StreamWriter myStreamWriter = process.StandardInput;
-                String inputText = null;
-
-                while (!process.WaitForExit(10))
-                {
-                    inputText = Console.ReadLine();
-                    myStreamWriter.WriteLine(inputText);
-
-                    ;
-                }
-            }
-            catch (Exception x)
+            } catch (Exception x)
             {
                 if (x.ToString().Contains("requires elevation"))
                 {
@@ -152,33 +139,73 @@ namespace Rashell
                 }
             }
 
-            //while (!process.HasExited)
-            //{
-            //    string stdin = null;
-            //    stdin = Console.ReadLine();
-            //    if (!string.IsNullOrEmpty(stdin))
-            //    {
-            //        process.StandardInput.WriteLine(stdin);
-            //    }
-            //}
+            // Signal to end the application
+            ManualResetEvent stopApp = new ManualResetEvent(false);
 
-            //foreach (ProcessThread thread in process.Threads)
-            //{
-            //    if (thread.ThreadState == ThreadState.Wait)
-            //    {
-            //        string stdin = null;
-            //        stdin = Console.ReadLine();
-            //        if (!string.IsNullOrEmpty(stdin))
-            //        {
-            //            process.StandardInput.WriteLine(stdin);
-            //        }
-            //    }
+            // Enables the exited event and set the stopApp signal on exited
+            process.EnableRaisingEvents = true;
+            process.Exited += (e, sender) => { stopApp.Set(); };
 
-            //}
+            // Wait for the child app to stop
+            stopApp.WaitOne();
 
+            // Kill all started threads when child ends.
+            outputThread.Abort();
+            errorThread.Abort();
+            inputThread.Abort();
+ 
             return true;
         }
 
-        #endregion "Executors"
+        /// <summary>
+        /// Continuously copies data from one stream to the other.
+        /// </summary>
+        /// <param name="instream">The input stream.</param>
+        /// <param name="outstream">The output stream.</param>
+        private static void passThrough(Stream instream, Stream outstream)
+        {
+
+            try
+            {
+                byte[] buffer = new byte[4096];
+                while (true)
+                {
+                    int len;
+                    while ((len = instream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        outstream.Write(buffer, 0, len);
+             
+                        outstream.Flush();
+                    }
+                }
+            } catch (Exception e)
+            {
+
+            }
+           
+        }
+
+        private static void outputReader(object p)
+        {
+            var process = (Process)p;
+            // Pass the standard output of the child to our standard output
+            passThrough(process.StandardOutput.BaseStream, Console.OpenStandardOutput());
+        }
+
+        private static void errorReader(object p)
+        {
+            var process = (Process)p;
+            // Pass the standard error of the child to our standard error
+            passThrough(process.StandardError.BaseStream, Console.OpenStandardError());
+        }
+
+        private static void inputReader(object p)
+        {
+            var process = (Process)p;
+            // Pass our standard input into the standard input of the child
+            passThrough(Console.OpenStandardInput(), process.StandardInput.BaseStream);
+        }
     }
+
+    #endregion "Executors"
 }

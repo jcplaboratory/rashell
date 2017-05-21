@@ -19,7 +19,7 @@ namespace Rashell
 
         private void Init()
         {
-            string version = "0.2a Build 350";
+            string version = "0.2a Build 351";
             string platform = Environment.OSVersion.ToString();
             string sessionUser = getSessionUser();
             string user_home = Environment.ExpandEnvironmentVariables("%userprofile%");
@@ -48,6 +48,10 @@ namespace Rashell
 
             Console.BackgroundColor = ConsoleColor.DarkMagenta;
             Console.Clear();
+
+            //Set Encoding
+            Console.InputEncoding = System.Text.Encoding.ASCII;
+            Console.OutputEncoding = System.Text.Encoding.ASCII;
 
             if (config.DisplayMSG()) //Display Rashell Welcome Message
             {
