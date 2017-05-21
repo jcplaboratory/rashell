@@ -125,17 +125,24 @@ namespace Rashell
                     if (reply == "y" || reply == "yes")
                     {
                         shell.restartAsAdmin();
+                    } else
+                    {
+                        goto KillThreads;
                     }
                 }
                 else if (x.ToString().Contains("specified executable is not a valid"))
                 {
                     Console.WriteLine("Rashell: Unable to start \"" + cmd + "\"" + ".");
                     format.ConsoleColorWrite("Invalid File Type", ConsoleColor.Red, false);
+
+                    goto KillThreads;
                 }
                 else
                 {
                     Console.WriteLine("Rashell: Unable to start \"" + cmd + "\"" + ".");
                     format.ConsoleColorWrite("Unknown Error", ConsoleColor.Yellow, false);
+
+                    goto KillThreads;
                 }
             }
 
@@ -150,6 +157,7 @@ namespace Rashell
             stopApp.WaitOne();
 
             // Kill all started threads when child ends.
+     KillThreads:
             outputThread.Abort();
             errorThread.Abort();
             inputThread.Abort();
