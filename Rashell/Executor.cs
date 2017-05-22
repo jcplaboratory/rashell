@@ -12,7 +12,7 @@ namespace Rashell
         private Formatters format = new Formatters();
         private Rashell shell = new Rashell();
 
-        #region "Executors"
+        #region "Executor"
 
         public void exec_in(string command, List<string> Arguments)
         {

@@ -13,6 +13,7 @@ namespace Rashell
         static String[] RashellArguments;
         private string DEF_WORKING_DIR;
         static string ShellWorkingDirectory = null;
+        private bool PRIORITIZE_BUILTIN_SHELL = false;
         private static Formatters format = new Formatters();
 
         #region "Initialization"
@@ -42,6 +43,7 @@ namespace Rashell
             this.EnvironmentPaths = config.GetEnvironmentPaths();
             this.KnownExtensions = config.GetKnownExtensions();
             this.DEF_WORKING_DIR = config.GetWorkingDir();
+            this.PRIORITIZE_BUILTIN_SHELL = config.PrioritizeBuiltInShell();
 
             //Console default settings
             Console.Title = "Rashell | ~v " + version + " | " + "~m " + machine + " | " + platform + " | " + sys_arch;
@@ -227,6 +229,12 @@ namespace Rashell
                 return false;
             }
 
+            if (FindInternal(cmd) && this.PRIORITIZE_BUILTIN_SHELL)
+            {
+                execute.exec_in(cmd, format.getArguments());
+                return true;
+            }
+
             cmdLoc = Find(cmd);
 
             if (!string.IsNullOrEmpty(cmdLoc))
@@ -304,6 +312,20 @@ namespace Rashell
             }
 
             return null;
+        }
+
+        public bool FindInternal(string cmd)
+        {
+            Dictionary<int, string> BuitInCommandDict = new Dictionary<int, string>();
+            Command command = new Command();
+
+            BuitInCommandDict = command.GetDictionary();
+
+            if (BuitInCommandDict.ContainsValue(cmd))
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool IsAdministrator()
