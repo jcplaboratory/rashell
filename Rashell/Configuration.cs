@@ -16,6 +16,7 @@ namespace Rashell
         private List<string> Known_Extensions = new List<string>();
         private bool ENABLE_EVT_LOG;
         private bool ENABLE_ERR_LOG;
+        private bool PRIORITIZE_BUILTIN_SHELL;
         private bool DISPLAY_WELCOME_MSG;
 
         public Configuration()
@@ -103,6 +104,22 @@ namespace Rashell
                                 }
                             }
                         }
+                        else if (line.StartsWith("PRIORITIZE_BUILTIN_SHELL:"))
+                        {
+                            if (line.EndsWith(";"))
+                            {
+                                string log = null;
+                                log = line.Substring(line.IndexOf(":") + 2, (line.Length - (line.IndexOf(":") + 1)) - 2);
+                                if (log == "ON")
+                                {
+                                    this.PRIORITIZE_BUILTIN_SHELL = true;
+                                }
+                                else if (log == "OFF")
+                                {
+                                    this.PRIORITIZE_BUILTIN_SHELL = false;
+                                }
+                            }
+                        }
                         else if (line.StartsWith("WELCOME_MESSAGE:"))
                         {
                             if (line.EndsWith(";"))
@@ -186,15 +203,22 @@ namespace Rashell
             string path;
 
             for (int i = 0; i < num; i++)
-
             {
                 path = systempaths.Substring(0, systempaths.IndexOf(";"));
-                Default += "\"" + path + "\";\n\t";
 
+                int x = i + 1;
+                if (x < num)
+                {
+                    Default += "\"" + path + "\";\n\t";
+                } else
+                {
+                    Default += "\"" + path + "\";\n";
+                }
+                
                 systempaths = systempaths.Remove(0, systempaths.IndexOf(";") + 1);
             }
 
-            Default += "\"" + systempaths + "\";\n\t";
+            //Default += "\"" + systempaths + "\";\n\t";
 
             Default += "}\n\n"
                           + "---Definition of Known Executables\n\n"
@@ -202,14 +226,17 @@ namespace Rashell
                           + ".EXE;\n\t"
                           + ".BAT;\n\t"
                           + ".CMD;\n"
-                          + ";\n\n"
+                          + "}\n\n"
                           + "---Definition of Default Working Directory\n\n"
                           + "DEF_WORKING_DIR = %userprofile%;\n\n"
                           + "---Toggle Logging\n\n"
                           + "ENABLE_EVT_LOGGING: ON;\n"
-                          + ":ENABLE_EVT_LOGGING: OFF;\n\n"
+                          + ":ENABLE_EVT_LOGGING: OFF;\n\n" 
                           + "ENABLE_ERR_LOGGING: ON;\n"
                           + ":ENABLE_ERR_LOGGING: OFF;\n\n"
+                          +"---Give built-in commands priority\n\n"
+                          + "PRIORITIZE_BUILTIN_SHELL: OFF;\n"
+                          + ":PRIORITIZE_BUILTIN_SHELL: ON;\n\n"
                           + "---Toggle Welcome Message\n\n"
                           + "WELCOME_MESSAGE: ON;\n"
                           + ":WELCOME_MESSAGE: OFF;";
@@ -266,6 +293,11 @@ namespace Rashell
         public bool DisplayMSG()
         {
             return this.DISPLAY_WELCOME_MSG;
+        }
+
+        public bool PrioritizeBuiltInShell()
+        {
+            return this.PRIORITIZE_BUILTIN_SHELL;
         }
     }
 }

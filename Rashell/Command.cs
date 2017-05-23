@@ -6,8 +6,37 @@ using Rashell.Commands;
 
 namespace Rashell
 {
+  
     internal class Command
     {
+        private Dictionary<int, string> dictionary = new Dictionary<int, string>();
+
+        public Command()
+        {
+            this.InitCommandDict();
+        }
+
+        private void InitCommandDict()
+        {
+            this.dictionary.Add(1, "clear");
+            this.dictionary.Add(2, "bye");
+            this.dictionary.Add(3, "quit");
+            this.dictionary.Add(4, "exit");
+            this.dictionary.Add(5, "exit");
+            this.dictionary.Add(6, "time");
+            this.dictionary.Add(7, "date");
+            this.dictionary.Add(8, "mkdir");
+            this.dictionary.Add(9, "ls");
+            this.dictionary.Add(10, "pwd");
+            this.dictionary.Add(11, "echo");
+            this.dictionary.Add(12, "whoiam");
+        }
+
+        public Dictionary<int, string> GetDictionary()
+        {
+            return this.dictionary;
+        } 
+
         public bool Clear()
         {
             try
@@ -99,7 +128,9 @@ namespace Rashell
                     {
                         Directory.SetCurrentDirectory(dir);
 
-                        string workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), dir);
+                        string dirname = Directory.GetCurrentDirectory().Split('\\').Last();
+
+                        string workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), dirname);
                         Rashell.ShellSessionDirectory = workdir;
                     } else
                     {
