@@ -177,7 +177,15 @@ namespace Rashell
             }
             else
             {
-                Generate();
+                try
+                {
+                    Generate();
+                } catch (Exception e)
+                {
+                    Rashell shell = new Rashell();
+                    shell.restartAsAdmin();
+                }
+                
                 goto Start;
             }
 
