@@ -119,8 +119,8 @@ namespace Rashell
                         goto append;
                     }
                 }
-
                 Starter(stdin);
+                Console.WriteLine();
                 format.ConsoleColorWrite(ShellWorkingDirectory, ConsoleColor.Cyan, true);
                 goto Start;
             }
