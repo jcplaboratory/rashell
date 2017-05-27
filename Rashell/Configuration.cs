@@ -19,6 +19,9 @@ namespace Rashell
         private bool PRIORITIZE_BUILTIN_SHELL;
         private bool DISPLAY_WELCOME_MSG;
 
+        private Formatters format = new Formatters();
+        private Rashell shell = new Rashell();
+
         public Configuration()
         {
             this.config_dir_path = AppDomain.CurrentDomain.BaseDirectory;
@@ -27,11 +30,18 @@ namespace Rashell
             this.ENABLE_ERR_LOG = false;
             this.ENABLE_EVT_LOG = false;
             this.DISPLAY_WELCOME_MSG = false;
+
+            //Read Configuration file
+            this.Read();
+
+            //get OnLoadConfigurations
+            //This might override any configuration loaded above in the current Read() Method.
+            this.OnLoadConfig();
         }
 
+        #region "Config Operators"
         public bool Read()
         {
-            Formatters format = new Formatters();
             bool FoundEnvi = false;
             bool FoundKnown_Ex = false;
             string Working_Dir = null;
@@ -188,7 +198,6 @@ namespace Rashell
                 
                 goto Start;
             }
-
             return true;
         }
 
@@ -199,7 +208,7 @@ namespace Rashell
                              + "Use it to add further relations, references and to tweak settings. \n \n"
                              + "Restart is required after this file is modified. \n \n"
                              + "WARNING... This configuration file is version specific (for v0.2) \n"
-                             + "You may need to migrate your chamges after you update Rashell. \n\n"
+                             + "You may need to migrate your changes after you update Rashell. \n\n"
                              + "Character \":\" Denotes a commented line.\n"
                              + "----------------------------------------------------------------------- \n \n"
                              + "---Definition of Environment Paths \n \n"
@@ -283,6 +292,91 @@ namespace Rashell
             return true;
         }
 
+        public void OnLoadConfig()
+        {
+            List<string> options = new List<string>();
+            List<string> variables = new List<string>();
+
+            options = shell.getOptions(RashellArguments);
+            bool active = false;
+
+            foreach (string op in options)
+            {
+                if (op.StartsWith("config$"))
+                {
+                    active = true;
+
+                    variables.Add(op.Substring(7));
+                }
+            }
+
+            if (active)
+            {
+               foreach (string set in variables)
+                {
+                    string value = set.Substring(set.IndexOf("=") + 1).ToUpper();
+                    string RealSet = set.Substring(0, set.IndexOf("=")).ToUpper();
+
+                    switch (RealSet)
+                    {
+                        case "DEF_WORKING_DIR":
+                            this.DEF_WORKING_DIR = format.Break(value);
+                            break;
+                        case "DISPLAY_WELCOME_MSG":
+     
+                            if (value == "OFF") {
+
+                                this.DISPLAY_WELCOME_MSG = false;
+                            } else if ( value == "ON" ) {
+                                this.DISPLAY_WELCOME_MSG = true;
+                            }
+                            break;
+
+                        case "PRIORITIZE_BUILTIN_SHELL":
+
+                            if (value == "OFF")
+                            {
+
+                                this.PRIORITIZE_BUILTIN_SHELL = false;
+                            }
+                            else if (value == "ON")
+                            {
+                                this.PRIORITIZE_BUILTIN_SHELL = true;
+                            }
+                            break;
+
+                        case "ENABLE_EVT_LOG":
+
+                            if (value == "OFF")
+                            {
+
+                                this.ENABLE_EVT_LOG = false;
+                            }
+                            else if (value == "ON")
+                            {
+                                this.ENABLE_EVT_LOG = true;
+                            }
+                            break;
+
+                        case "ENABLE_ERR_LOG":
+
+                            if (value == "OFF")
+                            {
+
+                                this.ENABLE_ERR_LOG = false;
+                            }
+                            else if (value == "ON")
+                            {
+                                this.ENABLE_ERR_LOG = true;
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region "Config Getters"
         public List<string> GetEnvironmentPaths()
         {
             return this.EnvironmentPaths;
@@ -307,5 +401,6 @@ namespace Rashell
         {
             return this.PRIORITIZE_BUILTIN_SHELL;
         }
+        #endregion
     }
 }

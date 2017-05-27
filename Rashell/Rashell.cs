@@ -10,8 +10,8 @@ namespace Rashell
     {
         private List<string> EnvironmentPaths = new List<string>();
         private List<string> KnownExtensions = new List<string>();
-        static String[] RashellArguments;
-        private string DEF_WORKING_DIR;
+        public static String[] RashellArguments;
+        private string DEF_WORKING_DIR = null;
         static string ShellWorkingDirectory = null;
         private bool PRIORITIZE_BUILTIN_SHELL = false;
         private static Formatters format = new Formatters();
@@ -20,7 +20,7 @@ namespace Rashell
 
         private void Init()
         {
-            string version = "0.2a Build 351";
+            string version = "0.2a Build 352 (Pansy Violet)";
             string platform = Environment.OSVersion.ToString();
             string sessionUser = getSessionUser();
             string user_home = Environment.ExpandEnvironmentVariables("%userprofile%");
@@ -39,7 +39,6 @@ namespace Rashell
 
             //Load Configuration
             Configuration config = new Configuration();
-            config.Read();
             this.EnvironmentPaths = config.GetEnvironmentPaths();
             this.KnownExtensions = config.GetKnownExtensions();
             this.DEF_WORKING_DIR = config.GetWorkingDir();
@@ -51,16 +50,12 @@ namespace Rashell
             Console.BackgroundColor = ConsoleColor.DarkMagenta;
             Console.Clear();
 
-            //Set Encoding
-            Console.InputEncoding = System.Text.Encoding.ASCII;
-            Console.OutputEncoding = System.Text.Encoding.ASCII;
-
             if (config.DisplayMSG()) //Display Rashell Welcome Message
             {
                 DisplayWelcome(version);
             }
 
-            if (string.IsNullOrEmpty(this.DEF_WORKING_DIR) || string.IsNullOrWhiteSpace(this.DEF_WORKING_DIR))
+            if (string.IsNullOrEmpty(this.DEF_WORKING_DIR) || string.IsNullOrWhiteSpace(this.DEF_WORKING_DIR) || !Directory.Exists(this.DEF_WORKING_DIR))
             {
                ShellSessionDirectory = user_home;
             }
@@ -371,7 +366,6 @@ namespace Rashell
         private List<char> getSwitches(String[] args)
         {
             List<char> switches = new List<char>();
-            bool rshSwitchFound = false;
 
             foreach (string arg in args)
             {
@@ -381,16 +375,14 @@ namespace Rashell
 
                     if (buffer.StartsWith("-") || buffer.StartsWith("/"))
                     {
-                        if (rshSwitchFound == false)
-                        {
-                            buffer = buffer.Substring(1);
+                        buffer = buffer.Substring(1);
 
+                        if (!buffer.StartsWith("-")) //checks it is not an option which has two: (--).
+                        {
                             foreach (char sw in buffer)
                             {
                                 switches.Add(sw);
                             }
-
-                            rshSwitchFound = true;
                         }
                     }
                 }
@@ -406,7 +398,6 @@ namespace Rashell
         private List<string> getArguments(String[] args)
         {
             List<string> arguments = new List<string>();
-            bool FoundRashellSwitches = false;
 
             if (args.Length != 0)
             {
@@ -416,21 +407,16 @@ namespace Rashell
                     {
                         string buffer = format.RemoveSpace(arg.ToLower());
 
-                        if (buffer.StartsWith("-") || buffer.StartsWith("/"))
+                        if (!buffer.StartsWith("-") && !buffer.StartsWith("/"))
                         {
-                            if (FoundRashellSwitches)
+                            if (buffer.Contains(" "))
                             {
-                                    arguments.Add(buffer.ToString());
+                                arguments.Add("\"" + buffer.ToString() + "\"");
+                            } else
+                            {
+                                arguments.Add(buffer.ToString());
                             }
-
-                            FoundRashellSwitches = true;
                         }
-                        else if (!buffer.StartsWith("-") && !buffer.StartsWith("/"))
-                        {
-                            arguments.Add(buffer.ToString());
-                        }
-
-
                     }
                     catch (Exception e)
                     {
@@ -439,6 +425,31 @@ namespace Rashell
                 }
             }
             return arguments;
+        }
+
+        public List<String> getOptions(String[] args)
+        {
+            List<string> options = new List<string>();
+
+            foreach (string arg in args)
+            {
+                try
+                {
+                    string option = format.RemoveSpace(arg.ToLower());
+
+                    if (option.StartsWith("--"))
+                    {
+                        option = option.Substring(2);
+                        options.Add(option);
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+
+            return options;
         }
 
         private void ExecArgument()
@@ -506,6 +517,7 @@ namespace Rashell
                     Console.WriteLine("");
                 }
 
+                
                 Starter(args);
 
                 if (StayAwake == false) { Environment.Exit(0); }

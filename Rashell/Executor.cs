@@ -96,9 +96,9 @@ namespace Rashell
 
             // Depending on your application you may either prioritize the IO or the exact opposite
             const ThreadPriority ioPriority = ThreadPriority.Highest;
-            Thread outputThread = new Thread(outputReader) { Name = "ChildIO Output", Priority = ioPriority };
-            Thread errorThread = new Thread(errorReader) { Name = "ChildIO Error", Priority = ioPriority };
-            Thread inputThread = new Thread(inputReader) { Name = "ChildIO Input", Priority = ioPriority };
+            Thread outputThread = new Thread(outputReader) { Name = "ChildIO Output", Priority = ioPriority, IsBackground = true };
+            Thread errorThread = new Thread(errorReader) { Name = "ChildIO Error", Priority = ioPriority, IsBackground = true };
+            Thread inputThread = new Thread(inputReader) { Name = "ChildIO Input", Priority = ioPriority, IsBackground = true };
 
             // Start the IO threads
             try

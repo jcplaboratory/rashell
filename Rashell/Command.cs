@@ -129,8 +129,16 @@ namespace Rashell
                         Directory.SetCurrentDirectory(dir);
 
                         string dirname = Directory.GetCurrentDirectory().Split('\\').Last();
-
-                        string workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), dirname);
+                        string workdir;
+     
+                        if (!string.IsNullOrEmpty(dirname) || !string.IsNullOrWhiteSpace(dirname))
+                        {
+                             workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), dirname);
+                        } else
+                        {
+                             workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), dir);
+                        }
+                       
                         Rashell.ShellSessionDirectory = workdir;
                     } else
                     {
