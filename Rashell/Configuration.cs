@@ -320,10 +320,16 @@ namespace Rashell
                     switch (RealSet)
                     {
                         case "DEF_WORKING_DIR":
+
+                            if (value.Contains(" "))
+                            {
+                                value = "\"" + value + "\"";
+                            }
+
                             this.DEF_WORKING_DIR = format.Break(value);
                             break;
                         case "DISPLAY_WELCOME_MSG":
-     
+                           
                             if (value == "OFF") {
 
                                 this.DISPLAY_WELCOME_MSG = false;
@@ -333,7 +339,7 @@ namespace Rashell
                             break;
 
                         case "PRIORITIZE_BUILTIN_SHELL":
-
+                           
                             if (value == "OFF")
                             {
 

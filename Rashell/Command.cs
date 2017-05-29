@@ -127,18 +127,34 @@ namespace Rashell
                     if (!string.IsNullOrEmpty(dir) && !string.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
                     {
                         Directory.SetCurrentDirectory(dir);
+                        int CountSlash = 0;
 
-                        string dirname = Directory.GetCurrentDirectory().Split('\\').Last();
-                        string workdir;
-     
-                        if (!string.IsNullOrEmpty(dirname) || !string.IsNullOrWhiteSpace(dirname))
+                        foreach(char slash in Directory.GetCurrentDirectory())
                         {
-                             workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), dirname);
-                        } else
-                        {
-                             workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), dir);
+                            if (slash.ToString() == "\\")
+                            {
+                                CountSlash++;
+                            }
                         }
                        
+                        string dirname = Directory.GetCurrentDirectory().Split('\\').Last();
+                        string workdir;
+
+                        if (CountSlash != 1)
+                        {
+                            if (!string.IsNullOrEmpty(dirname) || !string.IsNullOrWhiteSpace(dirname))
+                            {
+                                workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), dirname);
+                            }
+                            else
+                            {
+                                workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), dir);
+                            }
+                        } else
+                        {
+                            workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), Directory.GetCurrentDirectory());
+                        }
+
                         Rashell.ShellSessionDirectory = workdir;
                     } else
                     {
