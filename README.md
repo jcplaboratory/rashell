@@ -75,3 +75,13 @@ Here's a list:
 * `exit` & `bye` - Exits the Shell.
 
 There's more to come.
+
+GNU CoreUtils by Cygwin
+----------------------------------------------
+
+To bring the Linux feel to Windows, Rashell uses the GNU CoreUtils binaries compiled for Win32 by the Cygwin Project.
+GNU CoreUtils and Cygwin redistributed binaries are licensed under the GNU General Public License. See [License.md](https://github.com/jcplaboratory/rashell/blob/master/LICENSE.md)
+
+
+
+
