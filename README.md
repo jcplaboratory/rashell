@@ -80,7 +80,9 @@ GNU CoreUtils by Cygwin
 ----------------------------------------------
 
 To bring the Linux feel to Windows, Rashell uses the GNU CoreUtils binaries compiled for Win32 by the Cygwin Project.
-GNU CoreUtils and Cygwin redistributed binaries are licensed under the GNU General Public License. See [License.md](https://github.com/jcplaboratory/rashell/blob/master/LICENSE.md)
+GNU CoreUtils and Cygwin redistributed binaries are licensed under the GNU General Public License v3 or later. See [License.md](https://github.com/jcplaboratory/rashell/blob/master/LICENSE.md)
+
+The official list of Rashell's binary packages can be found [here.](https://github.com/jcplaboratory/rashell/blob/master/packages/packages.list.txt)
 
 
 
