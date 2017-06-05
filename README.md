@@ -79,7 +79,8 @@ There's more to come.
 Configuration overriders
 ----------------------------------------------
 
-It is possible to override configurations parameters using the `--config$` option argument.
+It is possible to override configuration parameters using the `--config$` option argument.
+
 The current list of supported config overriders (non case-sensitive):
 
 * `DEF_WORKING_DIR` changes the default directory in which Rashell starts up into.
