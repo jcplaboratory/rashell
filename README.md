@@ -83,7 +83,7 @@ It is possible to override configurations parameters using the `--config$` optio
 The current list of supported config overriders (non case-sensitive):
 
 * `DEF_WORKING_DIR` changes the default directory in which Rashell starts up into.
-  * Example: `rashell.exe --config$DEF_WORKING_DIR="%appdata%` will cause Rashell to startup into the AppData Directory.
+  * Example: `rashell.exe --config$DEF_WORKING_DIR="%appdata%"` will cause Rashell to startup into the AppData Directory.
 * `DISPLAY_WELCOME_MSG` can be used to toggle ON/OFF the display welcome message parameter.
   * Example: `rashell.exe --config$DISPLAY_WELCOME_MSG=OFF` toggles off Welcome Message.
 *  `PRIORITIZE_BUILTIN_SHELL` can be used to toggle the built-in shell parameter.
