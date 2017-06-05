@@ -252,8 +252,8 @@ namespace Rashell
                           + "ENABLE_ERR_LOGGING: ON;\n"
                           + ":ENABLE_ERR_LOGGING: OFF;\n\n"
                           +"---Give built-in commands priority\n\n"
-                          + "PRIORITIZE_BUILTIN_SHELL: OFF;\n"
-                          + ":PRIORITIZE_BUILTIN_SHELL: ON;\n\n"
+                          + "PRIORITIZE_BUILTIN_SHELL: ON;\n"
+                          + ":PRIORITIZE_BUILTIN_SHELL: OFF;\n\n"
                           + "---Toggle Welcome Message\n\n"
                           + "WELCOME_MESSAGE: ON;\n"
                           + ":WELCOME_MESSAGE: OFF;";

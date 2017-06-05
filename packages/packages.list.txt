@@ -17,7 +17,6 @@ GNU Lesser General Public License (LGPL). (https://www.gnu.org/licenses/lgpl-3.0
 **************************************************************************************************************
 
 arch.exe*
-bash.exe*
 bunzip2.exe*
 bzip2.exe*
 bzip2recover.exe*

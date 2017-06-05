@@ -20,7 +20,7 @@ namespace Rashell
 
         private void Init()
         {
-            string version = "0.2a Build 352 (Pansy Violet)";
+            string version = "0.2a Build 353 (Pansy Violet)";
             string platform = Environment.OSVersion.ToString();
             string sessionUser = getSessionUser();
             string user_home = Environment.ExpandEnvironmentVariables("%userprofile%");
