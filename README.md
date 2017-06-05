@@ -43,8 +43,8 @@ Comparison between 'Rashell' and 'cmd'
 Download Rashell
 --------------------------------------------
 
-Either clone and compile this repository or click on the link below.
-https://github.com/jcplaboratory/rashell/blob/master/Rashell/bin/Debug/Rashell.exe
+Either clone and compile this repository or click on the link below to download the lastest release.
+https://github.com/jcplaboratory/rashell/releases
 
 Execution via Argument
 --------------------------------------------
@@ -76,6 +76,25 @@ Here's a list:
 
 There's more to come.
 
+Configuration overriders
+----------------------------------------------
+
+It is possible to override configurations parameters using the `--config$` option argument.
+The current list of supported config overriders (non case-sensitive):
+
+* `DEF_WORKING_DIR` changes the default directory in which Rashell starts up into.
+  * Example: `rashell.exe --config$DEF_WORKING_DIR="%appdata%` will cause Rashell to startup into the AppData Directory.
+* `DISPLAY_WELCOME_MSG` can be used to toggle ON/OFF the display welcome message parameter.
+  * Example: `rashell.exe --config$DISPLAY_WELCOME_MSG=OFF` toggles off Welcome Message.
+*  `PRIORITIZE_BUILTIN_SHELL` can be used to toggle the built-in shell parameter.
+  * Example: `rashell.exe --config$PRIORITIZE_BUILTIN_SHELL=OFF` will toggle off the parameter.
+* `ENABLE_EVT_LOG` can be used to toggle ON/OFF Rashell's event-logger.
+  * Example: `rashell.exe --config$ENABLE_EVT_LOG=ON` will turn on the event-logger.
+* `ENABLE_ERR_LOG` can be used to toggle ON/OFF Rashell's error-logger.
+  * Example: `rashell.exe --config$ENABLE_ERR_LOG=OFF` will turn off the error-logger.
+  
+Multiple overriders can be used at once alongside Rashell's switches and command.
+  
 GNU CoreUtils by Cygwin
 ----------------------------------------------
 
