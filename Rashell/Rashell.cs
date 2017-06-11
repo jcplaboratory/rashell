@@ -8,16 +8,31 @@ namespace Rashell
 {
     internal class Rashell
     {
+        /// <summary>
+        /// Configuration parameters parsed through argument or loaded via the configuation file.
+        /// See the Configuration class.
+        /// </summary>
         private List<string> EnvironmentPaths = new List<string>();
         private List<string> KnownExtensions = new List<string>();
         public static String[] RashellArguments;
         private string DEF_WORKING_DIR = null;
         static string ShellWorkingDirectory = null;
         private bool PRIORITIZE_BUILTIN_SHELL = false;
+
+        /// <summary>
+        /// Instantiating the required class.
+        /// </summary>
         private static Formatters format = new Formatters();
 
         #region "Initialization"
-
+        /// <summary>
+        /// Initialize the shell with required configurations.
+        /// </summary>
+        /// <param name="version">Holds the version number or Rashell</param>
+        /// <param name="platform">Holds the OS Version</param>
+        /// <param name="user_home">Holds the user profile path.</param>
+        /// <param name="machine">Holds the PC name.</param>
+        /// <param name="arch_sys">Holds the system architecture.</param>
         private void Init()
         {
             string version = "0.2a Build 353 (Pansy Violet)";
@@ -37,7 +52,7 @@ namespace Rashell
                 sys_arch = "x86";
             }
 
-            //Load Configuration
+            //Load Configurations into the parameters
             Configuration config = new Configuration();
             this.EnvironmentPaths = config.GetEnvironmentPaths();
             this.KnownExtensions = config.GetKnownExtensions();
@@ -68,6 +83,10 @@ namespace Rashell
 
         }
 
+        /// <summary>
+        /// Makes the shell listen for and execute to user's input recursively.
+        /// </summary>
+        /// <param name="stdin">Standard Input - Input of user as is.</param>
         private void Listen()
         {
             string stdin = null;
@@ -79,7 +98,7 @@ namespace Rashell
 
             if (!string.IsNullOrEmpty(stdin) && !string.IsNullOrWhiteSpace(stdin))
             {
-                //Count Double Inverted Commas
+                //Count Double Inverted Commas in stdin
                 int commaCount = 0;
                 foreach (char c in stdin)
                 {
@@ -89,12 +108,12 @@ namespace Rashell
                     }
                 }
 
-                double rm = 0; //Check if num of d inverted commas is uneven
+                double rm = 0; //Check if num of d inverted commas is uneven, if even then all opened commas are closed.
                 rm = commaCount % 2;
                 string read = null;
                 if (!rm.Equals(0))
                 {
-                append: //append stdin until comma is even
+                append: // if not even append stdin until comma is even
                     format.ConsoleColorWrite(":>",ConsoleColor.Cyan, true);
                     read = Console.ReadLine();
                     bool found = false;
@@ -114,6 +133,8 @@ namespace Rashell
                         goto append;
                     }
                 }
+
+                //starts the command execution.
                 Starter(stdin);
                 Console.WriteLine();
                 format.ConsoleColorWrite(ShellWorkingDirectory, ConsoleColor.Cyan, true);
@@ -129,7 +150,11 @@ namespace Rashell
         #endregion "Initialization"
 
         #region "Session Vars"
-
+        /// <summary>
+        /// Keeps information about the current session.
+        /// </summary>
+        
+        ///<summary>Gets or set the shell working directory</summary>
         public static string ShellSessionDirectory
         {
             get
@@ -142,6 +167,13 @@ namespace Rashell
             }
         }
 
+        /// <summary>
+        /// updates the shell working directory on the console i.e: writes user@rashell:desktop>.
+        /// </summary>
+        /// <param name="username">The current user name</param>
+        /// <param name="directory">The current working directory</param>
+        /// <param name="reset">Whether to write to console or not. If reset=true, the console is updated next time the user hits enter key.</param>
+        /// <returns></returns>
         private bool UpdateShellWorkingDirectory(string username, string directory, bool reset)
         {
             directory = directory.ToLower();
@@ -162,6 +194,12 @@ namespace Rashell
             return true;
         }
 
+        /// <summary>
+        /// Returns the shell working directory as console input line i.e: user@rashell:desktop>.
+        /// </summary>
+        /// <param name="username">The current user's name</param>
+        /// <param name="directory">The current working directory.</param>
+        /// <returns>The consoles input with current working directory.</returns>
         public string setShellWorkingDirectory(string username, string directory)
         {
             directory = directory.ToLower();
@@ -178,6 +216,10 @@ namespace Rashell
             return ShellWorkingDirectory;
         }
 
+        /// <summary>
+        /// Returns the current session username.
+        /// </summary>
+        /// <returns></returns>
         public string getSessionUser()
         {
             string sys_usr = Environment.UserName.ToString().ToLower();
@@ -196,6 +238,10 @@ namespace Rashell
             return sys_usr;
         }
 
+        /// <summary>
+        /// Formulates the welcome message.
+        /// </summary>
+        /// <param name="version">Takes Rashell version number as a parameter.</param>
         private void DisplayWelcome(string version)
         {
             string msg = null;
@@ -208,11 +254,18 @@ namespace Rashell
         #endregion "Session Vars"
 
         #region "Loaders"
-
+        /// <summary>
+        /// Command Execution bootstrap.
+        /// </summary>
+        /// <param name="stdin">Takes the user's input as parameter.</param>
+        /// <param name="cmd">Holds only to command program to executes.</param>
+        /// <param name="cmdLoc">Holds the program to executes path location.</param>
+        /// <returns></returns>
         public bool Starter(string stdin)
         {
             Formatters format = new Formatters();
             Executor execute = new Executor();
+
             string cmd, cmdLoc;
 
             //Converting command to lowercase
@@ -224,13 +277,14 @@ namespace Rashell
                 return false;
             }
 
+            //If built-in command is to be prioritize, searches if the command exists then executes it.
             if (FindInternal(cmd) && this.PRIORITIZE_BUILTIN_SHELL)
             {
                 execute.exec_in(cmd, format.getArguments());
                 return true;
             }
 
-            cmdLoc = Find(cmd);
+            cmdLoc = Find(cmd); //loads the path of the command to executes.
 
             if (!string.IsNullOrEmpty(cmdLoc))
             {
@@ -244,6 +298,12 @@ namespace Rashell
             return true;
         }
 
+        /// <summary>
+        /// Searches in all the Environment Paths for the program specified by the user and returns it's path.
+        /// </summary>
+        /// <param name="cmd">Takes as input the command name to search.</param>
+        /// <param name="AllPaths">Binds all paths from the environment_paths variable and the current working directory.</param>
+        /// <returns></returns>
         public string Find(string cmd)
         {
             string cmdLoc = null;
@@ -309,6 +369,12 @@ namespace Rashell
             return null;
         }
 
+        /// <summary>
+        /// Checks is the program specified exists internally.
+        /// </summary>
+        /// <param name="cmd">The program to search for.</param>
+        /// <param name="Dictionary">Constains all the built-in commands name.</param>
+        /// <returns></returns>
         public bool FindInternal(string cmd)
         {
             Dictionary<int, string> BuitInCommandDict = new Dictionary<int, string>();
@@ -323,6 +389,10 @@ namespace Rashell
             return false;
         }
 
+        /// <summary>
+        /// Checks if the shell is running with admin priviledges.
+        /// </summary>
+        /// <returns></returns>
         public bool IsAdministrator()
         {
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
@@ -330,6 +400,9 @@ namespace Rashell
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
+        /// <summary>
+        /// Restarts the shell with admin rights.
+        /// </summary>
         public void restartAsAdmin()
         {
             if (IsAdministrator() == false)
@@ -362,7 +435,12 @@ namespace Rashell
         #endregion "Loaders"
 
         #region "Argument Handlers"
-
+        /// <summary>
+        /// Get a list of the swithes i.e arguments starting with "-".
+        /// </summary>
+        /// <param name="args">Arguments parsed to rashell during startup.</param>
+        /// <param name="buffer">Holds tmp a formatted version of the arguments then the switch.</param>
+        /// <returns></returns>
         private List<char> getSwitches(String[] args)
         {
             List<char> switches = new List<char>();
@@ -395,6 +473,11 @@ namespace Rashell
             return switches;
         }
 
+        /// <summary>
+        /// Gets all arguments i.e: everything not identified as a switch or an option.
+        /// </summary>
+        /// <param name="args">Arguments parsed to rashell during startup.</param>
+        /// <returns></returns>
         private List<string> getArguments(String[] args)
         {
             List<string> arguments = new List<string>();
@@ -427,6 +510,11 @@ namespace Rashell
             return arguments;
         }
 
+        /// <summary>
+        /// Gets a list of all the options. i.e: arguments starting with "--".
+        /// </summary>
+        /// <param name="args">Arguments parsed to rashell during startup.</param>
+        /// <returns></returns>
         public List<String> getOptions(String[] args)
         {
             List<string> options = new List<string>();
@@ -452,6 +540,11 @@ namespace Rashell
             return options;
         }
 
+        /// <summary>
+        /// Executes the arguments parsed to rashell including the switches but excluding the options.
+        /// </summary>
+        /// <param name="switches">Holds a list of the switches.</param>
+        /// <param name="arguments">Holds the argument.</param>
         private void ExecArgument()
         {
 

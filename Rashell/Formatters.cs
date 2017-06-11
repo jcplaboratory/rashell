@@ -5,10 +5,20 @@ using System.Linq;
 
 namespace Rashell
 {
+    /// <summary>
+    /// Formats string to be in Rashell's standard form.
+    /// </summary>
+    /// <param name="arguments">Stores the list of arguments parsed to rashell. Results from the Break() function.</param>
     class Formatters
     {
         protected List<string> arguments = new List<string>();
         #region "Formatters"
+        /// <summary>
+        /// Removes all redundant space in stdin, seperates command from arguments, detect broken commands, expand exvironment variables and takes of 
+        /// the overall formatting of the user's input.
+        /// </summary>
+        /// <param name="stdin">The user's input as is.</param>
+        /// <returns></returns>
         public string Break(string stdin)
         {
          
@@ -106,11 +116,20 @@ namespace Rashell
             return args[0];
         }
 
+        /// <summary>
+        /// Returns the arguments.
+        /// </summary>
+        /// <returns></returns>
         public List<string> getArguments()
         {
             return this.arguments;
         }
 
+        /// <summary>
+        /// Removes redundant spaces from a string of characters.
+        /// </summary>
+        /// <param name="stdin">The user's input as is.</param>
+        /// <returns></returns>
         public string RemoveSpace(string stdin)
         {
             //count and remove redundant spaces.
@@ -149,6 +168,11 @@ namespace Rashell
             return newStdin;
         }
 
+        /// <summary>
+        /// Removes tab characters from the user's input.
+        /// </summary>
+        /// <param name="stdin">The user's input as is.</param>
+        /// <returns></returns>
         public string RemoveTab(string stdin)
         {
             //count and remove redundant spaces.
@@ -182,6 +206,11 @@ namespace Rashell
             return newStdin;
         }
 
+        /// <summary>
+        /// Counts the number of space characters in a string of characters.
+        /// </summary>
+        /// <param name="stdin">The user's input as is.</param>
+        /// <returns></returns>
         public int CountSpaces(string stdin)
         {
             int spaces = 0;
@@ -195,6 +224,11 @@ namespace Rashell
             return spaces;
         }
 
+        /// <summary>
+        /// Counts the number of tab characters in a string of characters.
+        /// </summary>
+        /// <param name="stdin">The user's input as is.</param>
+        /// <returns></returns>
         public int CountTabs(string stdin)
         {
             int tabs = 0;
@@ -208,6 +242,12 @@ namespace Rashell
             return tabs;
         }
 
+        /// <summary>
+        /// Write the specified text on console using a specified color.
+        /// </summary>
+        /// <param name="value">The text to write.</param>
+        /// <param name="color">The color in which to write the text.</param>
+        /// <param name="InLine">Whether to write the text in line or to the next line.</param>
         public void ConsoleColorWrite(string value, ConsoleColor color, bool InLine)
         {
             Console.BackgroundColor = ConsoleColor.DarkMagenta;
@@ -229,6 +269,11 @@ namespace Rashell
             Console.ForegroundColor = ConsoleColor.Gray;
         }
 
+        /// <summary>
+        /// Gets the list of invalid characters in the user's input.
+        /// </summary>
+        /// <param name="stdin">The user's input as is.</param>
+        /// <returns></returns>
         public string GetInvalidChars(string stdin)
         {
             char[] InvalidChars = Path.GetInvalidPathChars();

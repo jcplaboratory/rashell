@@ -6,9 +6,12 @@ using Rashell.Commands;
 
 namespace Rashell
 {
-  
+  /// <summary>
+  /// Contains the implementations of the built-in commands of Rashell.
+  /// </summary>
     internal class Command
     {
+        //The dictionary of the built-in commands.
         private Dictionary<int, string> dictionary = new Dictionary<int, string>();
 
         public Command()
@@ -16,6 +19,9 @@ namespace Rashell
             this.InitCommandDict();
         }
 
+        /// <summary>
+        /// Initializes the class and the Dictionary of commands.
+        /// </summary>
         private void InitCommandDict()
         {
             this.dictionary.Add(1, "clear");
@@ -32,11 +38,21 @@ namespace Rashell
             this.dictionary.Add(12, "whoiam");
         }
 
+        /// <summary>
+        /// Returns the Dicionary of commands.
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<int, string> GetDictionary()
         {
             return this.dictionary;
-        } 
+        }
 
+        ///<summary>Contains the built-in commands.</summary>
+        #region "Built-in Commands"
+        /// <summary>
+        /// Commands clears the console's screen
+        /// </summary>
+        /// <returns></returns>
         public bool Clear()
         {
             try
@@ -50,6 +66,10 @@ namespace Rashell
             return true;
         }
 
+        /// <summary>
+        /// Close the shell.
+        /// </summary>
+        /// <returns></returns>
         public bool Exit()
         {
             try
@@ -63,6 +83,11 @@ namespace Rashell
             return true;
         }
 
+        /// <summary>
+        /// Implementation of the ls command. See the ls class under Commands>ls.
+        /// </summary>
+        /// <param name="arguments">The arguments to be parsed to ls.</param>
+        /// <returns></returns>
         public bool Ls(List<string> arguments)
         {
             ls list = new ls();
@@ -74,6 +99,10 @@ namespace Rashell
             }
         }
 
+        /// <summary>
+        /// Returns the time in the console.
+        /// </summary>
+        /// <returns></returns>
         public bool Time()
         {
             try
@@ -87,6 +116,10 @@ namespace Rashell
             return true;
         }
 
+        /// <summary>
+        /// Returns the current date in the console.
+        /// </summary>
+        /// <returns></returns>
         public bool Date()
         {
             try
@@ -100,6 +133,11 @@ namespace Rashell
             return true;
         }
 
+        /// <summary>
+        /// Implementation of the mkdir command. See the mkdir class under Commands>mkdir.
+        /// </summary>
+        /// <param name="arguments"></param>
+        /// <returns></returns>
         public bool Mkdir(List<string> arguments)
         {
             mkdir MKDIR = new mkdir();
@@ -113,6 +151,12 @@ namespace Rashell
             }      
         }
 
+        /// <summary>
+        /// Changes the current directory
+        /// </summary>
+        /// <param name="directory">The directory to be working into.</param>
+        /// <param name="dir">holds a formatted version of the directory path.</param>
+        /// <returns></returns>
         public bool cd(List<string> directory)
         {
             Formatters format = new Formatters();
@@ -129,6 +173,7 @@ namespace Rashell
                         Directory.SetCurrentDirectory(dir);
                         int CountSlash = 0;
 
+                        //Formats the shell working directory.
                         foreach(char slash in Directory.GetCurrentDirectory())
                         {
                             if (slash.ToString() == "\\")
@@ -168,6 +213,10 @@ namespace Rashell
             return true;
         }
 
+        /// <summary>
+        /// Prints the current working directory on console.
+        /// </summary>
+        /// <returns></returns>
         public bool pwd()
         {
             string pwd = Directory.GetCurrentDirectory().ToString();
@@ -175,6 +224,11 @@ namespace Rashell
             return true;
         }
 
+        /// <summary>
+        /// prints a series of string characters on screen.
+        /// </summary>
+        /// <param name="text">The text to print on screen.</param>
+        /// <returns></returns>
         public bool echo(List<string> text)
         {
             string output = null;
@@ -197,6 +251,10 @@ namespace Rashell
             return true;
         }
 
+        /// <summary>
+        /// An extended version of the whoami command.
+        /// </summary>
+        /// <returns></returns>
         public bool whoami()
         {
             Rashell shell = new Rashell();
@@ -217,5 +275,7 @@ namespace Rashell
 
             return true;
         }
+
+        #endregion
     }
 }

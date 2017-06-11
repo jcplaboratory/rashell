@@ -6,6 +6,9 @@ using System.Threading;
 
 namespace Rashell
 {
+    /// <summary>
+    /// Constains codes used to execute commands.
+    /// </summary>
     internal class Executor
     {
         protected Command command = new Command();
@@ -14,6 +17,11 @@ namespace Rashell
 
         #region "Executor"
 
+        /// <summary>
+        /// Rashell's built-in command executor.
+        /// </summary>
+        /// <param name="command">The command name</param>
+        /// <param name="Arguments">The arguments to be parsed to the command.</param>
         public void exec_in(string command, List<string> Arguments)
         {
             switch (command)
@@ -72,15 +80,23 @@ namespace Rashell
             }
         }
 
+        /// <summary>
+        /// Executes external command program.
+        /// </summary>
+        /// <param name="cmd">The command program path.</param>
+        /// <param name="arguments">The arguments to be parsed to the command.</param>
+        /// <returns></returns>
         public bool Execute(string cmd, List<string> arguments)
         {
+            //Making all the arguments in a single line string.
             string Arguments = null;
 
             foreach (string arg in arguments)
             {
                 Arguments += " " + arg;
             }
-
+            
+            //Declare a new process object.
             Process process = new Process();
             ProcessStartInfo property = new ProcessStartInfo(cmd)
             {
@@ -94,6 +110,7 @@ namespace Rashell
 
             process.StartInfo = property;
 
+            //Creating individual threads to monitor stdin, stdout and error to and from the running command.
             // Depending on your application you may either prioritize the IO or the exact opposite
             const ThreadPriority ioPriority = ThreadPriority.Highest;
             Thread outputThread = new Thread(outputReader) { Name = "ChildIO Output", Priority = ioPriority, IsBackground = true };
@@ -111,6 +128,9 @@ namespace Rashell
 
             } catch (Exception x)
             {
+                //handles the exceptions.
+
+                //Handles the Elevation Required Exception.
                 if (x.ToString().Contains("requires elevation"))
                 {
                     Console.WriteLine("Rashell: Unable to start application \"" + cmd + "\"" + ".");
