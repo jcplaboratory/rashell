@@ -9,6 +9,20 @@ namespace Rashell
 {
     internal class Configuration : Rashell
     {
+        ///<summary>
+        ///Creates configuration parameters as variables.
+        ///</summary>
+        ///<param name="config_dir_path">The configuation file directory</param>
+        ///<param name="config_path">The configuation file location path</param>
+        ///<param name="DEF_WORKING_DIR">The working directory to startup into</param>
+        ///<param name="EnvironmentPaths">The paths to look for commands/executables into</param>
+        ///<param name="Known_Extensions">The list of executables recognised by rashell</param>
+        ///<param name="ENABLE_EVT_LOG">enable event loggin parameter</param>
+        ///<param name="ENABLE_ERR_LOG">Enable the error loggin parameter</param>
+        ///<param name="PRIORITIZE_BUILTIN_SHELL">Whether to prioritize builtin commands or not.</param>
+        ///<param name="DISPLAY_WELCOME_MSG">Whether to display welcome message on Rashell's startup.</param>
+        
+
         private string config_dir_path = AppDomain.CurrentDomain.BaseDirectory;
         private string config_path = AppDomain.CurrentDomain.BaseDirectory + "\\config.conf";
         private string DEF_WORKING_DIR;
@@ -19,6 +33,9 @@ namespace Rashell
         private bool PRIORITIZE_BUILTIN_SHELL;
         private bool DISPLAY_WELCOME_MSG;
 
+        ///<summary>
+        ///Declare and initialize needed class
+        ///</summary>
         private Formatters format = new Formatters();
         private Rashell shell = new Rashell();
 
@@ -40,11 +57,20 @@ namespace Rashell
         }
 
         #region "Config Operators"
+        /// <summary>
+        /// Reads the configuration file and load the parameters
+        /// </summary>
+        /// <param name="FoundEnvi">Flag: Used to tell the program that en environment path is found.</param>
+        /// <param name="FoundKnown">Flag: Used to tell the program that a executable extension is found.</param>
+        /// <param name="Working_Dir">Tmp hold the DEF_WORKING_DIR path.</param>
+        /// <param name="ElevationRequested">Whether Rights Elevation was required.</param>
+
         public bool Read()
         {
             bool FoundEnvi = false;
             bool FoundKnown_Ex = false;
             string Working_Dir = null;
+            bool ElevationRequested = false;
 
         Start:
             if (File.Exists(config_path))
@@ -192,8 +218,26 @@ namespace Rashell
                     Generate();
                 } catch (Exception e)
                 {
-                    Rashell shell = new Rashell();
-                    shell.restartAsAdmin();
+                    if (e.ToString().Contains("requires elevation"))
+                    {
+                        if  (!ElevationRequested)
+                        {
+                            try
+                            {
+                                ElevationRequested = true;
+                                Rashell shell = new Rashell();
+                                shell.restartAsAdmin();
+                            } catch (Exception x)
+                            {
+                                
+                            }
+                           
+                        }else
+                        {
+                            Environment.Exit(1);
+                        }
+                        
+                    }   
                 }
                 
                 goto Start;
@@ -201,6 +245,11 @@ namespace Rashell
             return true;
         }
 
+
+        /// <summary>
+        /// Generates a clean configuration file
+        /// </summary>
+        /// <returns></returns>
         public bool Generate()
         {
             string Default = "----------------------------------------------------------------------- \n"
@@ -214,6 +263,7 @@ namespace Rashell
                              + "---Definition of Environment Paths \n \n"
                              + "ENVIRONMENT_PATHS {\n\t";
 
+            ///<summary>Add all Environment Paths on the OS in Rashell's configuration</summary>
             string systempaths = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
 
             int num = systempaths.Count(x => x == ';');
@@ -235,7 +285,6 @@ namespace Rashell
                 systempaths = systempaths.Remove(0, systempaths.IndexOf(";") + 1);
             }
 
-            //Default += "\"" + systempaths + "\";\n\t";
 
             Default += "}\n\n"
                           + "---Definition of Known Executables\n\n"
@@ -292,6 +341,12 @@ namespace Rashell
             return true;
         }
 
+        /// <summary>
+        /// Overload the configuration parameters with the configurations overriders (if any) parsed as argument during startup.
+        /// </summary>
+        /// <param name="options">retrieves a list of all arguments starting with "--".</param>
+        /// <param name="variables">all variables parsed with the config$ option.</param>
+        /// <param name="active">Cause the function to run only if at least one option with --config$ is found.</param>
         public void OnLoadConfig()
         {
             List<string> options = new List<string>();
