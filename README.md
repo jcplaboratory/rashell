@@ -6,11 +6,7 @@ Developers
 --------------------------------------------
 [![jcplaboratory](https://www.jcplaboratory.org/wp-content/uploads/2016/08/nav-banner_ra_large.png?w=250)](http://jcplaboratory.org)
 
-Rashell is developed by the J.C.P Laboratory <http://jcplaboratory.org>.
-The main developers are:
-
-* POOTTAREN J. Cédric
-* BAICHOO Arwin Neil
+Rashell is developed by the community.
 
 Introduction
 --------------------------------------------
