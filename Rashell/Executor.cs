@@ -77,7 +77,7 @@ namespace Rashell
                     this.command.RmDir(Arguments);
                     break;
                 default:
-                    Console.WriteLine("Command or Operator " + "\"" + command + "\"" + " not found." + "\nCheck syntax.");
+                    Console.WriteLine("Command or Operator " + "\"" + command + "\"" + " not found." + "\n Check syntax.");
                     break;
             }
         }

@@ -25,13 +25,13 @@ namespace Rashell.Commands
                 }
                 else
                 {
-                    Console.WriteLine("The syntax of the command is incorrect. No argument or folder provided \n");
+                    Console.WriteLine("The syntax of the command is incorrect. Missing operand.");
                     return false;
                 }
             }
             catch (Exception E)
             {
-                Console.WriteLine("Error : " + E.Message + "\n");
+                Console.WriteLine("Error : " + E.Message);
                 return false;
             }
         }
@@ -41,11 +41,10 @@ namespace Rashell.Commands
         /// </summary>
         private static void Help()
         {
-            Console.WriteLine("Removes a directory");
+            Console.WriteLine("Removes a directory \n");
+            Console.WriteLine("rmdir [/S] [/Q] path(s)");
             Console.WriteLine("");
-            Console.WriteLine("RMDIR [/S] [/Q] path(s)");
-            Console.WriteLine("");
-            Console.WriteLine("/S : Deletes every files and subdirectories in the provided directory");
+            Console.WriteLine("/S : Deletes the directory and its content recursively");
             Console.WriteLine("/Q : Silent mode");
         }
 
@@ -80,13 +79,13 @@ namespace Rashell.Commands
                         Directory.Delete(p, deleteEverything);
                         if (!isSilent)
                         {
-                            Console.WriteLine("Deleting " + p + (deleteEverything ? " and everything inside it" : ""));
+                            Console.WriteLine("Deleting directory " + "\"" + p + "\"" + (deleteEverything ? " recursively" : ""));
                         }
                     }
                 }
                 else
                 {
-                    Console.WriteLine("The syntax of the command is incorrect. No folder provided \n");
+                    Console.WriteLine("The syntax of the command is incorrect. No folder specified. \n");
                     return false;
                 }
             }
