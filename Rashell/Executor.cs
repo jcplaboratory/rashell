@@ -73,7 +73,9 @@ namespace Rashell
                 case "whoiam":
                     this.command.whoami();
                     break;
-
+                case "rmdir":
+                    this.command.RmDir(Arguments);
+                    break;
                 default:
                     Console.WriteLine("Command or Operator " + "\"" + command + "\"" + " not found." + "\nCheck syntax.");
                     break;
@@ -95,7 +97,7 @@ namespace Rashell
             {
                 Arguments += " " + arg;
             }
-            
+
             //Declare a new process object.
             Process process = new Process();
             ProcessStartInfo property = new ProcessStartInfo(cmd)
@@ -126,7 +128,8 @@ namespace Rashell
                 errorThread.Start(process);
                 inputThread.Start(process);
 
-            } catch (Exception x)
+            }
+            catch (Exception x)
             {
                 //handles the exceptions.
 
@@ -145,7 +148,8 @@ namespace Rashell
                     if (reply == "y" || reply == "yes")
                     {
                         shell.restartAsAdmin();
-                    } else
+                    }
+                    else
                     {
                         goto KillThreads;
                     }
@@ -176,12 +180,12 @@ namespace Rashell
             // Wait for the child app to stop
             stopApp.WaitOne();
 
-            // Kill all started threads when child ends.
-     KillThreads:
+        // Kill all started threads when child ends.
+        KillThreads:
             outputThread.Abort();
             errorThread.Abort();
             inputThread.Abort();
- 
+
             return true;
         }
 
@@ -202,15 +206,16 @@ namespace Rashell
                     while ((len = instream.Read(buffer, 0, buffer.Length)) > 0)
                     {
                         outstream.Write(buffer, 0, len);
-             
+
                         outstream.Flush();
                     }
                 }
-            } catch (Exception e)
+            }
+            catch (Exception)
             {
 
             }
-           
+
         }
 
         private static void outputReader(object p)
