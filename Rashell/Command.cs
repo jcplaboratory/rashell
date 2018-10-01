@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Rashell.Commands;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Rashell.Commands;
 
 namespace Rashell
 {
-  /// <summary>
-  /// Contains the implementations of the built-in commands of Rashell.
-  /// </summary>
+    /// <summary>
+    /// Contains the implementations of the built-in commands of Rashell.
+    /// </summary>
     internal class Command
     {
         //The dictionary of the built-in commands.
@@ -36,6 +36,7 @@ namespace Rashell
             this.dictionary.Add(10, "pwd");
             this.dictionary.Add(11, "echo");
             this.dictionary.Add(12, "whoiam");
+            this.dictionary.Add(13, "rmdir");
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace Rashell
             {
                 Console.Clear();
             }
-            catch (Exception E)
+            catch (Exception)
             {
                 return false;
             }
@@ -76,7 +77,7 @@ namespace Rashell
             {
                 Environment.Exit(0);
             }
-            catch (Exception E)
+            catch (Exception)
             {
                 return false;
             }
@@ -91,9 +92,11 @@ namespace Rashell
         public bool Ls(List<string> arguments)
         {
             ls list = new ls();
-            if (list.main(arguments)) {
+            if (list.main(arguments))
+            {
                 return true;
-            } else
+            }
+            else
             {
                 return false;
             }
@@ -109,7 +112,7 @@ namespace Rashell
             {
                 Console.WriteLine("The current time is: " + DateTime.Now.ToString("HH:mm:ss:fff") + "\n");
             }
-            catch (Exception E)
+            catch (Exception)
             {
                 return false;
             }
@@ -126,7 +129,7 @@ namespace Rashell
             {
                 Console.WriteLine("The current date is: " + DateTime.Now.ToLongDateString() + "\n");
             }
-            catch (Exception E)
+            catch (Exception)
             {
                 return false;
             }
@@ -145,10 +148,11 @@ namespace Rashell
             if (MKDIR.main(arguments))
             {
                 return true;
-            } else
+            }
+            else
             {
                 return false;
-            }      
+            }
         }
 
         /// <summary>
@@ -174,14 +178,14 @@ namespace Rashell
                         int CountSlash = 0;
 
                         //Formats the shell working directory.
-                        foreach(char slash in Directory.GetCurrentDirectory())
+                        foreach (char slash in Directory.GetCurrentDirectory())
                         {
                             if (slash.ToString() == "\\")
                             {
                                 CountSlash++;
                             }
                         }
-                       
+
                         string dirname = Directory.GetCurrentDirectory().Split('\\').Last();
                         string workdir;
 
@@ -195,17 +199,20 @@ namespace Rashell
                             {
                                 workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), dir);
                             }
-                        } else
+                        }
+                        else
                         {
                             workdir = shell.setShellWorkingDirectory(shell.getSessionUser(), Directory.GetCurrentDirectory());
                         }
 
                         Rashell.ShellSessionDirectory = workdir;
-                    } else
+                    }
+                    else
                     {
                         Console.WriteLine("The directory you specified is invalid.");
                     }
-                }catch (Exception e)
+                }
+                catch (Exception)
                 {
 
                 }
@@ -232,14 +239,15 @@ namespace Rashell
         public bool echo(List<string> text)
         {
             string output = null;
-            foreach(string txt in text)
+            foreach (string txt in text)
             {
-                if(txt != null)
+                if (txt != null)
                 {
-                    if(output == null)
+                    if (output == null)
                     {
                         output = txt;
-                    }else
+                    }
+                    else
                     {
                         output += " " + txt;
                     }
@@ -263,19 +271,38 @@ namespace Rashell
             string profile = "\"" + Environment.ExpandEnvironmentVariables("%userprofile%") + "\"";
             string sys_user = Environment.UserName.ToString();
 
-            if(shell.IsAdministrator() == false)
+            if (shell.IsAdministrator() == false)
             {
-                Console.WriteLine("Session User: " + user + "\n" + "System User: " + sys_user + "\n" + "Elevation: Standard" + 
+                Console.WriteLine("Session User: " + user + "\n" + "System User: " + sys_user + "\n" + "Elevation: Standard" +
                     "\n" + "Domain: " + domain + "\n" + "Profile: " + profile);
-            } else
+            }
+            else
             {
-                Console.WriteLine("Session User: " + user + "\n" + "System User: " + sys_user + "\n" + "Elevation: Administrator" + 
+                Console.WriteLine("Session User: " + user + "\n" + "System User: " + sys_user + "\n" + "Elevation: Administrator" +
                     "\n" + "Domain: " + domain + "\n" + "Profile: " + profile);
             }
 
             return true;
         }
 
+        /// <summary>
+        /// Removing files or directories
+        /// </summary>
+        /// <param name="arguments"> paths of directories to remove and other arguments</param>
+        /// <returns>true if the removal went well</returns>
+        public bool RmDir(List<string> arguments)
+        {
+            rmdir RMDIR = new rmdir();
+
+            if (RMDIR.main(arguments))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         #endregion
     }
 }
