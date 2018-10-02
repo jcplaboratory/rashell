@@ -37,6 +37,7 @@ namespace Rashell
             this.dictionary.Add(11, "echo");
             this.dictionary.Add(12, "whoiam");
             this.dictionary.Add(13, "rmdir");
+            this.dictionary.Add(14, "del");
         }
 
         /// <summary>
@@ -91,15 +92,7 @@ namespace Rashell
         /// <returns></returns>
         public bool Ls(List<string> arguments)
         {
-            ls list = new ls();
-            if (list.main(arguments))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (new ls()).main(arguments);
         }
 
         /// <summary>
@@ -143,16 +136,7 @@ namespace Rashell
         /// <returns></returns>
         public bool Mkdir(List<string> arguments)
         {
-            mkdir MKDIR = new mkdir();
-
-            if (MKDIR.main(arguments))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return new mkdir().main(arguments);
         }
 
         /// <summary>
@@ -292,16 +276,17 @@ namespace Rashell
         /// <returns>true if the removal went well</returns>
         public bool RmDir(List<string> arguments)
         {
-            rmdir RMDIR = new rmdir();
+            return (new rmdir()).main(arguments);
+        }
 
-            if (RMDIR.main(arguments))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+        /// <summary>
+        /// deleting files
+        /// </summary>
+        /// <param name="arguments">list of files and arguments</param>
+        /// <returns>true if the deletion went well</returns>
+        public bool Del(List<string> arguments)
+        {
+            return (new del()).main(arguments);
         }
         #endregion
     }
