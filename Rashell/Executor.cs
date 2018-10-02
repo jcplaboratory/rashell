@@ -74,10 +74,10 @@ namespace Rashell
                     this.command.whoami();
                     break;
                 case "rmdir":
-                    this.command.RmDir(Arguments);
+                    this.command.rmdir(Arguments);
                     break;
-                case "del":
-                    this.command.Del(Arguments);
+                case "rm":
+                    this.command.rm(Arguments);
                     break;
                 default:
                     Console.WriteLine("Command or Operator " + "\"" + command + "\"" + " not found." + "\n Check syntax.");

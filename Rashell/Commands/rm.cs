@@ -8,7 +8,7 @@ namespace Rashell.Commands
     /// <summary>
     /// Del command : deleting a file
     /// </summary>
-    class del : Command
+    class rm : Command
     {
         /// <summary>
         /// main rmdir algorithm
@@ -25,13 +25,13 @@ namespace Rashell.Commands
                 }
                 else
                 {
-                    Console.WriteLine("The syntax of the command is incorrect. No argument or file provided \n");
+                    Console.WriteLine("No file specified.");
                     return false;
                 }
             }
             catch (Exception E)
             {
-                Console.WriteLine("Error : " + E.Message + "\n");
+                Console.WriteLine("Error : " + E.Message);
                 return false;
             }
         }
@@ -41,15 +41,15 @@ namespace Rashell.Commands
         /// </summary>
         private static void Help()
         {
-            Console.WriteLine("Deletes one or more files");
+            Console.WriteLine("Remove file(s)");
             Console.WriteLine("");
             //Console.WriteLine("DEL [/P] [/F] [/S] [/Q] [/A[[:]attributes]] names");
-            Console.WriteLine("DEL [/P] [/Q] names");
+            Console.WriteLine("rm [/P] [/Q] [file]");
             Console.WriteLine("");
-            Console.WriteLine("  names         Specifies a list of one or more files or directories.");
-            Console.WriteLine("                Wildcards may be used to delete multiple files. If a");
-            Console.WriteLine("                directory is specified, all files within the directory");
-            Console.WriteLine("                will be deleted.");
+            Console.WriteLine("  file         Specifies a list of one or more files or directories.");
+            Console.WriteLine("               Wildcards (*) may be used to perform multiple deletion. If a");
+            Console.WriteLine("               directory is specified, all files within the directory");
+            Console.WriteLine("               will be deleted.");
             Console.WriteLine("");
             Console.WriteLine("  /P            Prompts for confirmation before deleting each file.");
 
@@ -59,7 +59,7 @@ namespace Rashell.Commands
             // TODO : implement /S
             //Console.WriteLine("  /S            Delete specified files from all subdirectories.");
 
-            Console.WriteLine("  /Q            Quiet mode, do not ask if ok to delete on global wildcard");
+            Console.WriteLine("  /Q            Quiet mode, deletes without confirmation. Usage: (*)");
 
             // TODO : implement /A
             /*Console.WriteLine("  /A            Selects files to delete based on attributes");
@@ -155,7 +155,7 @@ namespace Rashell.Commands
                 }
                 else
                 {
-                    Console.WriteLine("The syntax of the command is incorrect. No folder provided \n");
+                    Console.WriteLine("No directory specified.");
                     return false;
                 }
             }

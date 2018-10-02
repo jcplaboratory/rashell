@@ -37,7 +37,7 @@ namespace Rashell
             this.dictionary.Add(11, "echo");
             this.dictionary.Add(12, "whoiam");
             this.dictionary.Add(13, "rmdir");
-            this.dictionary.Add(14, "del");
+            this.dictionary.Add(14, "rm");
         }
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace Rashell
         /// </summary>
         /// <param name="arguments"> paths of directories to remove and other arguments</param>
         /// <returns>true if the removal went well</returns>
-        public bool RmDir(List<string> arguments)
+        public bool rmdir(List<string> arguments)
         {
             return (new rmdir()).main(arguments);
         }
@@ -284,9 +284,9 @@ namespace Rashell
         /// </summary>
         /// <param name="arguments">list of files and arguments</param>
         /// <returns>true if the deletion went well</returns>
-        public bool Del(List<string> arguments)
+        public bool rm(List<string> arguments)
         {
-            return (new del()).main(arguments);
+            return (new rm()).main(arguments);
         }
         #endregion
     }

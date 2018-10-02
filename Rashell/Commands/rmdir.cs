@@ -55,7 +55,7 @@ namespace Rashell.Commands
         /// <returns>did the rmdir routine go well ?</returns>
         private static bool RemoveDirs(List<string> arguments)
         {
-            if (arguments.Any(p => string.Equals(p, "/?", StringComparison.InvariantCultureIgnoreCase)))
+            if (arguments.Any(p => string.Equals(p, "/?", StringComparison.InvariantCultureIgnoreCase)) || arguments.Any(p => string.Equals(p, "-?", StringComparison.InvariantCultureIgnoreCase)))
             {
                 Help();
             }
@@ -85,7 +85,7 @@ namespace Rashell.Commands
                 }
                 else
                 {
-                    Console.WriteLine("The syntax of the command is incorrect. No folder specified. \n");
+                    Console.WriteLine("No directory specified.");
                     return false;
                 }
             }
