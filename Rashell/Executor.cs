@@ -76,6 +76,9 @@ namespace Rashell
                 case "rmdir":
                     this.command.RmDir(Arguments);
                     break;
+                case "del":
+                    this.command.Del(Arguments);
+                    break;
                 default:
                     Console.WriteLine("Command or Operator " + "\"" + command + "\"" + " not found." + "\n Check syntax.");
                     break;
