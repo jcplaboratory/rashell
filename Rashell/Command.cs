@@ -170,7 +170,7 @@ namespace Rashell
                             }
                         }
 
-                        string dirname = Directory.GetCurrentDirectory().Split('\\').Last();
+                        string dirname = Directory.GetCurrentDirectory().ToString();
                         string workdir;
 
                         if (CountSlash != 1)

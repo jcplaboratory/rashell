@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Rashell")]
-[assembly: AssemblyDescription("SHELL Command Processor for Rat! Sub-Systems")]
+[assembly: AssemblyDescription("Application Interface Shell")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("J.C.P Laboratory")]
 [assembly: AssemblyProduct("Rashell")]
