@@ -40,7 +40,7 @@ Download Rashell
 --------------------------------------------
 
 Either clone and compile this repository or click on the link below to download the lastest release.
-https://dl.jcplaboratory.org/rsh
+https://github.com/jcplaboratory/rashell/releases/
 
 Execution via Argument
 --------------------------------------------
