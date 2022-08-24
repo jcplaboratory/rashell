@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Principal;
+using System.Linq;
 
 namespace Rashell
 {
@@ -176,19 +177,22 @@ namespace Rashell
         /// <returns></returns>
         private bool UpdateShellWorkingDirectory(string username, string directory, bool reset)
         {
-            directory = directory.ToLower();
+            Directory.SetCurrentDirectory(directory);
 
-            if (directory == Environment.ExpandEnvironmentVariables("%userprofile%").ToLower())
+            if (Directory.GetCurrentDirectory().ToString().ToLower() == Environment.ExpandEnvironmentVariables("%userprofile%").ToLower())
             {
                 ShellWorkingDirectory = username + "@" + "rashell:>";
-            } else
+            }
+            else
             {
+                directory = Directory.GetCurrentDirectory().Split('\\').Last().ToLower();
+
                 ShellWorkingDirectory = username + "@" + "rashell:" + directory + ">";
             }
 
             if (reset)
             {
-                format.ConsoleColorWrite(ShellSessionDirectory, ConsoleColor.Cyan, true);
+                format.ConsoleColorWrite(ShellSessionDirectory, ConsoleColor.Gray, true);
             }
 
             return true;
@@ -210,6 +214,8 @@ namespace Rashell
             }
             else
             {
+                directory = Directory.GetCurrentDirectory().Split('\\').Last();
+
                 ShellWorkingDirectory = username + "@" + "rashell:" + directory + ">";
             }
 

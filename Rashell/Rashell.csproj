@@ -63,6 +63,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
+    <Compile Include="Commands\rm.cs" />
+    <Compile Include="Commands\rmdir.cs" />
     <Compile Include="Commands\ls.cs" />
     <Compile Include="Commands\mkdir.cs" />
     <Compile Include="Configuration.cs" />
